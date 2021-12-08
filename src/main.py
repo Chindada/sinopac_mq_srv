@@ -17,7 +17,7 @@ from flask import Flask,  request, jsonify, make_response
 from flasgger import Swagger
 from waitress import serve
 from shioaji import BidAskSTKv1, TickSTKv1, Exchange, constant, error, TickFOPv1
-from protobuf import sinopac_pb2
+from protobuf import trade_agent_pb2
 
 deployment = os.getenv('DEPLOYMENT')
 server_token = ''.join(random.choice(string.ascii_letters) for _ in range(25))
@@ -120,9 +120,9 @@ def snapshot():
     for stock in ALL_STOCK_NUM_LIST:
         contracts.append(token.Contracts.Stocks[stock])
     snapshots = token.snapshots(contracts)
-    response = sinopac_pb2.SnapShotArrProto()
+    response = trade_agent_pb2.SnapShotArrProto()
     for result in snapshots:
-        tmp = sinopac_pb2.SnapShotProto()
+        tmp = trade_agent_pb2.SnapShotProto()
         tmp.ts = result.ts
         tmp.code = result.code
         tmp.exchange = result.exchange
@@ -178,7 +178,7 @@ def entiretick():
           date:
             type: string
     '''
-    response = sinopac_pb2.EntireTickArrProto()
+    response = trade_agent_pb2.EntireTickArrProto()
     body = request.get_json()
     ticks = token.ticks(
         contract=token.Contracts.Stocks[body['stock_num']],
@@ -199,7 +199,7 @@ def entiretick():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = sinopac_pb2.EntireTickProto()
+        tmp = trade_agent_pb2.EntireTickProto()
         tmp.ts = ticks.ts[pos]
         tmp.close = ticks.close[pos]
         tmp.volume = ticks.volume[pos]
@@ -243,7 +243,7 @@ def fetch_kbar():
           end_date:
             type: string
     '''
-    response = sinopac_pb2.KbarArrProto()
+    response = trade_agent_pb2.KbarArrProto()
     body = request.get_json()
     kbar = token.kbars(
         contract=token.Contracts.Stocks[body['stock_num']],
@@ -263,7 +263,7 @@ def fetch_kbar():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = sinopac_pb2.KbarProto()
+        tmp = trade_agent_pb2.KbarProto()
         tmp.ts = kbar.ts[pos]
         tmp.Close = kbar.Close[pos]
         tmp.Open = kbar.Open[pos]
@@ -303,7 +303,7 @@ def fetch_tse_kbar():
           end_date:
             type: string
     '''
-    response = sinopac_pb2.KbarArrProto()
+    response = trade_agent_pb2.KbarArrProto()
     body = request.get_json()
     kbar = token.kbars(
         contract=token.Contracts.Indexs.TSE.TSE001,
@@ -323,7 +323,7 @@ def fetch_tse_kbar():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = sinopac_pb2.KbarProto()
+        tmp = trade_agent_pb2.KbarProto()
         tmp.ts = kbar.ts[pos]
         tmp.Close = kbar.Close[pos]
         tmp.Open = kbar.Open[pos]
@@ -361,7 +361,7 @@ def tse_entiretick():
           date:
             type: string
     '''
-    response = sinopac_pb2.EntireTickArrProto()
+    response = trade_agent_pb2.EntireTickArrProto()
     body = request.get_json()
     ticks = token.ticks(
         contract=token.Contracts.Indexs.TSE.TSE001,
@@ -382,7 +382,7 @@ def tse_entiretick():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = sinopac_pb2.EntireTickProto()
+        tmp = trade_agent_pb2.EntireTickProto()
         tmp.ts = ticks.ts[pos]
         tmp.close = ticks.close[pos]
         tmp.volume = ticks.volume[pos]
@@ -583,9 +583,9 @@ def volumerank():
         count=rank_count,
         date=req_date,
     )
-    response = sinopac_pb2.VolumeRankArrProto()
+    response = trade_agent_pb2.VolumeRankArrProto()
     for result in ranks:
-        tmp = sinopac_pb2.VolumeRankProto()
+        tmp = trade_agent_pb2.VolumeRankProto()
         tmp.date = result.date
         tmp.code = result.code
         tmp.name = result.name
@@ -1257,10 +1257,10 @@ def mutex_update_status(timeout: int):
 def status_callback(reply: typing.List[sj.order.Trade]):
     '''Sinopac status's callback'''
     with mutex:
-        result = sinopac_pb2.TradeRecordArrProto()
+        result = trade_agent_pb2.TradeRecordArrProto()
         if len(reply) != 0:
             for order in reply:
-                res = sinopac_pb2.TradeRecordProto()
+                res = trade_agent_pb2.TradeRecordProto()
                 if order.status.status == constant.Status.Cancelled:
                     order.status.status = 'Canceled'
                 if order.status.order_datetime is None:
@@ -1289,7 +1289,7 @@ def quote_callback_v1(exchange: Exchange, tick: TickSTKv1):
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/data/streamtick'
-    res = sinopac_pb2.StreamTickProto()
+    res = trade_agent_pb2.StreamTickProto()
     res.exchange = exchange
     res.tick.code = tick.code
     res.tick.date_time = datetime.strftime(
@@ -1330,7 +1330,7 @@ def bid_ask_callback(exchange: Exchange, bidask: BidAskSTKv1):
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/data/bid-ask'
-    res = sinopac_pb2.BidAskProto()
+    res = trade_agent_pb2.BidAskProto()
     res.exchange = exchange
     res.bid_ask.code = bidask.code
     res.bid_ask.date_time = datetime.strftime(
@@ -1361,7 +1361,7 @@ def event_callback(resp_code: int, event_code: int, info: str, event: str):
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/trade-event'
-    res = sinopac_pb2.EventProto()
+    res = trade_agent_pb2.EventProto()
     res.resp_code = resp_code
     res.event_code = event_code
     res.info = info
@@ -1417,7 +1417,7 @@ def send_token_expired_event():
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/trade-event'
-    res = sinopac_pb2.EventProto()
+    res = trade_agent_pb2.EventProto()
     res.resp_code = 500
     res.event_code = 401
     res.info = 'Please resubscribe if there exits subscription'
