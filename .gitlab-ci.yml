@@ -50,7 +50,7 @@ docker-deploy:
     - |
       ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run --name sinopac_mq_srv \
       --network tocvlan \
-      --ip=172.20.10.221 \
+      --ip=172.20.10.223 \
       --restart always \
       -v /$SERVER_USER/sinopac_mq_srv_logs:/sinopac_mq_srv/logs \
       -e PYPORT=$PYPORT \
