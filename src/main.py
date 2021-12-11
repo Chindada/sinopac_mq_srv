@@ -5,6 +5,7 @@ from re import search
 from datetime import datetime
 import threading
 import time
+import ssl
 import string
 import random
 import logging
@@ -13,6 +14,7 @@ import os
 import typing
 import requests
 import shioaji as sj
+import paho.mqtt.client as paho
 from flask import Flask,  request, jsonify, make_response
 from flasgger import Swagger
 from waitress import serve
@@ -28,6 +30,7 @@ swagger = Swagger(api)
 token = sj.Shioaji()
 session = requests.Session()
 mutex = threading.Lock()
+mqtt_client = paho.Client(client_id="sinopac-srv")
 
 log_format = str()
 extension_name = str()
@@ -120,9 +123,9 @@ def snapshot():
     for stock in ALL_STOCK_NUM_LIST:
         contracts.append(token.Contracts.Stocks[stock])
     snapshots = token.snapshots(contracts)
-    response = trade_agent_pb2.SnapShotArrProto()
+    response = trade_agent_pb2.SnapshotResponse
     for result in snapshots:
-        tmp = trade_agent_pb2.SnapShotProto()
+        tmp = trade_agent_pb2.SnapshotMessage()
         tmp.ts = result.ts
         tmp.code = result.code
         tmp.exchange = result.exchange
@@ -178,7 +181,7 @@ def entiretick():
           date:
             type: string
     '''
-    response = trade_agent_pb2.EntireTickArrProto()
+    response = trade_agent_pb2.HistoryTickResponse()
     body = request.get_json()
     ticks = token.ticks(
         contract=token.Contracts.Stocks[body['stock_num']],
@@ -199,7 +202,7 @@ def entiretick():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = trade_agent_pb2.EntireTickProto()
+        tmp = trade_agent_pb2.HistoryTickMessage()
         tmp.ts = ticks.ts[pos]
         tmp.close = ticks.close[pos]
         tmp.volume = ticks.volume[pos]
@@ -243,7 +246,7 @@ def fetch_kbar():
           end_date:
             type: string
     '''
-    response = trade_agent_pb2.KbarArrProto()
+    response = trade_agent_pb2.KbarResponse()
     body = request.get_json()
     kbar = token.kbars(
         contract=token.Contracts.Stocks[body['stock_num']],
@@ -263,7 +266,7 @@ def fetch_kbar():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = trade_agent_pb2.KbarProto()
+        tmp = trade_agent_pb2.KbarMessage()
         tmp.ts = kbar.ts[pos]
         tmp.Close = kbar.Close[pos]
         tmp.Open = kbar.Open[pos]
@@ -303,7 +306,7 @@ def fetch_tse_kbar():
           end_date:
             type: string
     '''
-    response = trade_agent_pb2.KbarArrProto()
+    response = trade_agent_pb2.KbarResponse()
     body = request.get_json()
     kbar = token.kbars(
         contract=token.Contracts.Indexs.TSE.TSE001,
@@ -323,7 +326,7 @@ def fetch_tse_kbar():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = trade_agent_pb2.KbarProto()
+        tmp = trade_agent_pb2.KbarMessage()
         tmp.ts = kbar.ts[pos]
         tmp.Close = kbar.Close[pos]
         tmp.Open = kbar.Open[pos]
@@ -361,7 +364,7 @@ def tse_entiretick():
           date:
             type: string
     '''
-    response = trade_agent_pb2.EntireTickArrProto()
+    response = trade_agent_pb2.HistoryTickResponse()
     body = request.get_json()
     ticks = token.ticks(
         contract=token.Contracts.Indexs.TSE.TSE001,
@@ -382,7 +385,7 @@ def tse_entiretick():
             resp.headers['Content-Type'] = 'application/protobuf'
             return resp
     for pos in range(total_count):
-        tmp = trade_agent_pb2.EntireTickProto()
+        tmp = trade_agent_pb2.HistoryTickMessage()
         tmp.ts = ticks.ts[pos]
         tmp.close = ticks.close[pos]
         tmp.volume = ticks.volume[pos]
@@ -583,9 +586,9 @@ def volumerank():
         count=rank_count,
         date=req_date,
     )
-    response = trade_agent_pb2.VolumeRankArrProto()
+    response = trade_agent_pb2.VolumeRankResponse()
     for result in ranks:
-        tmp = trade_agent_pb2.VolumeRankProto()
+        tmp = trade_agent_pb2.VolumeRankMessage()
         tmp.date = result.date
         tmp.code = result.code
         tmp.name = result.name
@@ -1257,10 +1260,10 @@ def mutex_update_status(timeout: int):
 def status_callback(reply: typing.List[sj.order.Trade]):
     '''Sinopac status's callback'''
     with mutex:
-        result = trade_agent_pb2.TradeRecordArrProto()
+        result = trade_agent_pb2.TradeRecordResponse()
         if len(reply) != 0:
             for order in reply:
-                res = trade_agent_pb2.TradeRecordProto()
+                res = trade_agent_pb2.TradeRecordMessage()
                 if order.status.status == constant.Status.Cancelled:
                     order.status.status = 'Canceled'
                 if order.status.order_datetime is None:
@@ -1289,33 +1292,34 @@ def quote_callback_v1(exchange: Exchange, tick: TickSTKv1):
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/data/streamtick'
-    res = trade_agent_pb2.StreamTickProto()
-    res.exchange = exchange
-    res.tick.code = tick.code
-    res.tick.date_time = datetime.strftime(
+    response = trade_agent_pb2.RealTimeTickResponse()
+    response.exchange = exchange
+    # res = trade_agent_pb2.RealTimeTickMessage()
+    response.tick.code = tick.code
+    response.tick.date_time = datetime.strftime(
         tick.datetime, '%Y-%m-%d %H:%M:%S.%f')
-    res.tick.open = tick.open
-    res.tick.avg_price = tick.avg_price
-    res.tick.close = tick.close
-    res.tick.high = tick.high
-    res.tick.low = tick.low
-    res.tick.amount = tick.amount
-    res.tick.total_amount = tick.total_amount
-    res.tick.volume = tick.volume
-    res.tick.total_volume = tick.total_volume
-    res.tick.tick_type = tick.tick_type
-    res.tick.chg_type = tick.chg_type
-    res.tick.price_chg = tick.price_chg
-    res.tick.pct_chg = tick.pct_chg
-    res.tick.bid_side_total_vol = tick.bid_side_total_vol
-    res.tick.ask_side_total_vol = tick.ask_side_total_vol
-    res.tick.bid_side_total_cnt = tick.bid_side_total_cnt
-    res.tick.ask_side_total_cnt = tick.ask_side_total_cnt
-    res.tick.suspend = tick.suspend
-    res.tick.simtrade = tick.simtrade
+    response.tick.open = tick.open
+    response.tick.avg_price = tick.avg_price
+    response.tick.close = tick.close
+    response.tick.high = tick.high
+    response.tick.low = tick.low
+    response.tick.amount = tick.amount
+    response.tick.total_amount = tick.total_amount
+    response.tick.volume = tick.volume
+    response.tick.total_volume = tick.total_volume
+    response.tick.tick_type = tick.tick_type
+    response.tick.chg_type = tick.chg_type
+    response.tick.price_chg = tick.price_chg
+    response.tick.pct_chg = tick.pct_chg
+    response.tick.bid_side_total_vol = tick.bid_side_total_vol
+    response.tick.ask_side_total_vol = tick.ask_side_total_vol
+    response.tick.bid_side_total_cnt = tick.bid_side_total_cnt
+    response.tick.ask_side_total_cnt = tick.ask_side_total_cnt
+    response.tick.suspend = tick.suspend
+    response.tick.simtrade = tick.simtrade
     try:
         session.post(trade_bot_url, headers={
-            'Content-Type': 'application/protobuf'}, data=res.SerializeToString(), timeout=20)
+            'Content-Type': 'application/protobuf'}, data=response.SerializeToString(), timeout=20)
     except requests.exceptions.ConnectionError:
         connection_err()
         logger.error('quote callback err: %s, %s', tick.code,
@@ -1330,22 +1334,22 @@ def bid_ask_callback(exchange: Exchange, bidask: BidAskSTKv1):
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/data/bid-ask'
-    res = trade_agent_pb2.BidAskProto()
-    res.exchange = exchange
-    res.bid_ask.code = bidask.code
-    res.bid_ask.date_time = datetime.strftime(
+    response = trade_agent_pb2.BidAskResponse()
+    response.exchange = exchange
+    response.bid_ask.code = bidask.code
+    response.bid_ask.date_time = datetime.strftime(
         bidask.datetime, '%Y-%m-%d %H:%M:%S.%f')
-    res.bid_ask.bid_price.extend(bidask.bid_price)
-    res.bid_ask.bid_volume.extend(bidask.bid_volume)
-    res.bid_ask.diff_bid_vol.extend(bidask.diff_bid_vol)
-    res.bid_ask.ask_price.extend(bidask.ask_price)
-    res.bid_ask.ask_volume.extend(bidask.ask_volume)
-    res.bid_ask.diff_ask_vol.extend(bidask.diff_ask_vol)
-    res.bid_ask.suspend = bidask.suspend
-    res.bid_ask.simtrade = bidask.simtrade
+    response.bid_ask.bid_price.extend(bidask.bid_price)
+    response.bid_ask.bid_volume.extend(bidask.bid_volume)
+    response.bid_ask.diff_bid_vol.extend(bidask.diff_bid_vol)
+    response.bid_ask.ask_price.extend(bidask.ask_price)
+    response.bid_ask.ask_volume.extend(bidask.ask_volume)
+    response.bid_ask.diff_ask_vol.extend(bidask.diff_ask_vol)
+    response.bid_ask.suspend = bidask.suspend
+    response.bid_ask.simtrade = bidask.simtrade
     try:
         session.post(trade_bot_url, headers={
-            'Content-Type': 'application/protobuf'}, data=res.SerializeToString(), timeout=20)
+            'Content-Type': 'application/protobuf'}, data=response.SerializeToString(), timeout=20)
     except requests.exceptions.ConnectionError:
         connection_err()
         logger.error('bidask callback err: %s, %s', bidask.code,
@@ -1361,7 +1365,7 @@ def event_callback(resp_code: int, event_code: int, info: str, event: str):
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/trade-event'
-    res = trade_agent_pb2.EventProto()
+    res = trade_agent_pb2.EventResponse()
     res.resp_code = resp_code
     res.event_code = event_code
     res.info = info
@@ -1417,7 +1421,7 @@ def send_token_expired_event():
         return
     trade_bot_url = 'http://'+TRADE_BOT_HOST+':' + \
         TRADE_BOT_PORT+'/trade-bot/trade-event'
-    res = trade_agent_pb2.EventProto()
+    res = trade_agent_pb2.EventResponse()
     res.resp_code = 500
     res.event_code = 401
     res.info = 'Please resubscribe if there exits subscription'
@@ -1528,9 +1532,35 @@ def server_up_time():
         UP_TIME += 1
 
 
+def connect_mqtt_broker():
+    mqtt_client.tls_set(
+        ca_certs="./configs/certs/ca_crt.pem",
+        certfile="./configs/certs/client_crt.pem",
+        keyfile="./configs/certs/client_key.pem",
+        cert_reqs=ssl.CERT_NONE,
+        tls_version=ssl.PROTOCOL_TLSv1_2,
+    )
+    mqtt_client.username_pw_set('toc', 'asdf0000')
+    mqtt_client.tls_insecure_set(True)
+    mqtt_client.connect(
+        host="172.20.10.2",
+        port=8887,
+        keepalive=60,
+    )
+    if mqtt_client.is_connected is False:
+        logger.error('MQTT Connect Fail')
+        time.sleep(3)
+        return -1
+    mqtt_client.loop_start()
+    return 0
+
+
 if __name__ == '__main__':
     threading.Thread(target=reset_err).start()
     threading.Thread(target=server_up_time).start()
+    status = connect_mqtt_broker()
+    if status == -1:
+        run_pkill()
     set_sinopac_callback()
     sino_login()
     fill_all_stock_list()

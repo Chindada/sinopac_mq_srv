@@ -14,164 +14,162 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n*trade_agent_protobuf/src/trade_agent.proto\x12\x14trade_agent_protobuf\"\xab\x02\n\x0b\x42idAskProto\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12=\n\x07\x62id_ask\x18\x02 \x01(\x0b\x32,.trade_agent_protobuf.BidAskProto.BidAskData\x1a\xca\x01\n\nBidAskData\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x11\n\tbid_price\x18\x03 \x03(\x01\x12\x12\n\nbid_volume\x18\x04 \x03(\x03\x12\x14\n\x0c\x64iff_bid_vol\x18\x05 \x03(\x03\x12\x11\n\task_price\x18\x06 \x03(\x01\x12\x12\n\nask_volume\x18\x07 \x03(\x03\x12\x14\n\x0c\x64iff_ask_vol\x18\x08 \x03(\x03\x12\x0f\n\x07suspend\x18\t \x01(\x03\x12\x10\n\x08simtrade\x18\n \x01(\x03\"I\n\x12\x45ntireTickArrProto\x12\x33\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32%.trade_agent_protobuf.EntireTickProto\"\x9d\x01\n\x0f\x45ntireTickProto\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x63lose\x18\x02 \x01(\x01\x12\x0e\n\x06volume\x18\x03 \x01(\x03\x12\x11\n\tbid_price\x18\x04 \x01(\x01\x12\x12\n\nbid_volume\x18\x05 \x01(\x03\x12\x11\n\task_price\x18\x06 \x01(\x01\x12\x12\n\nask_volume\x18\x07 \x01(\x03\x12\x11\n\ttick_type\x18\x08 \x01(\x03\"=\n\x0cKbarArrProto\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.trade_agent_protobuf.KbarProto\"_\n\tKbarProto\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x43lose\x18\x02 \x01(\x01\x12\x0c\n\x04Open\x18\x03 \x01(\x01\x12\x0c\n\x04High\x18\x04 \x01(\x01\x12\x0b\n\x03Low\x18\x05 \x01(\x01\x12\x0e\n\x06Volume\x18\x06 \x01(\x03\"E\n\x10SnapShotArrProto\x12\x31\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32#.trade_agent_protobuf.SnapShotProto\"\xa9\x03\n\rSnapShotProto\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x10\n\x08\x65xchange\x18\x03 \x01(\t\x12\x0c\n\x04open\x18\x04 \x01(\x01\x12\x0c\n\x04high\x18\x05 \x01(\x01\x12\x0b\n\x03low\x18\x06 \x01(\x01\x12\r\n\x05\x63lose\x18\x07 \x01(\x01\x12\x11\n\ttick_type\x18\x08 \x01(\t\x12\x14\n\x0c\x63hange_price\x18\t \x01(\x01\x12\x13\n\x0b\x63hange_rate\x18\n \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0b \x01(\t\x12\x15\n\raverage_price\x18\x0c \x01(\x01\x12\x0e\n\x06volume\x18\r \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0e \x01(\x03\x12\x0e\n\x06\x61mount\x18\x0f \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x10 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x11 \x01(\x01\x12\x11\n\tbuy_price\x18\x12 \x01(\x01\x12\x12\n\nbuy_volume\x18\x13 \x01(\x01\x12\x12\n\nsell_price\x18\x14 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x15 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x16 \x01(\x01\"\x82\x04\n\x0fStreamTickProto\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12<\n\x04tick\x18\x02 \x01(\x0b\x32..trade_agent_protobuf.StreamTickProto.TickData\x1a\x9e\x03\n\x08TickData\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x0c\n\x04open\x18\x03 \x01(\x01\x12\x11\n\tavg_price\x18\x04 \x01(\x01\x12\r\n\x05\x63lose\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\x0e\n\x06\x61mount\x18\x08 \x01(\x01\x12\x14\n\x0ctotal_amount\x18\t \x01(\x01\x12\x0e\n\x06volume\x18\n \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0b \x01(\x03\x12\x11\n\ttick_type\x18\x0c \x01(\x03\x12\x10\n\x08\x63hg_type\x18\r \x01(\x03\x12\x11\n\tprice_chg\x18\x0e \x01(\x01\x12\x0f\n\x07pct_chg\x18\x0f \x01(\x01\x12\x1a\n\x12\x62id_side_total_vol\x18\x10 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_vol\x18\x11 \x01(\x03\x12\x1a\n\x12\x62id_side_total_cnt\x18\x12 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_cnt\x18\x13 \x01(\x03\x12\x0f\n\x07suspend\x18\x14 \x01(\x03\x12\x10\n\x08simtrade\x18\x15 \x01(\x03\"P\n\nEventProto\x12\x11\n\tresp_code\x18\x01 \x01(\x03\x12\x12\n\nevent_code\x18\x02 \x01(\x03\x12\x0c\n\x04info\x18\x03 \x01(\t\x12\r\n\x05\x65vent\x18\x04 \x01(\t\"K\n\x13TradeRecordArrProto\x12\x34\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32&.trade_agent_protobuf.TradeRecordProto\"\x81\x01\n\x10TradeRecordProto\x12\x10\n\x08quantity\x18\x01 \x01(\x03\x12\r\n\x05price\x18\x02 \x01(\x01\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\x12\x0c\n\x04\x63ode\x18\x04 \x01(\t\x12\n\n\x02id\x18\x05 \x01(\t\x12\x12\n\norder_time\x18\x06 \x01(\t\x12\x0e\n\x06status\x18\x07 \x01(\t\"I\n\x12VolumeRankArrProto\x12\x33\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32%.trade_agent_protobuf.VolumeRankProto\"\x87\x04\n\x0fVolumeRankProto\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\n\n\x02ts\x18\x04 \x01(\x03\x12\x0c\n\x04open\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\r\n\x05\x63lose\x18\x08 \x01(\x01\x12\x13\n\x0bprice_range\x18\t \x01(\x01\x12\x11\n\ttick_type\x18\n \x01(\x03\x12\x14\n\x0c\x63hange_price\x18\x0b \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0c \x01(\x03\x12\x15\n\raverage_price\x18\r \x01(\x01\x12\x0e\n\x06volume\x18\x0e \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0f \x01(\x03\x12\x0e\n\x06\x61mount\x18\x10 \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x11 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x12 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x13 \x01(\x01\x12\x11\n\tbuy_price\x18\x14 \x01(\x01\x12\x12\n\nbuy_volume\x18\x15 \x01(\x03\x12\x12\n\nsell_price\x18\x16 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x17 \x01(\x03\x12\x12\n\nbid_orders\x18\x18 \x01(\x03\x12\x13\n\x0b\x62id_volumes\x18\x19 \x01(\x03\x12\x12\n\nask_orders\x18\x1a \x01(\x03\x12\x13\n\x0b\x61sk_volumes\x18\x1b \x01(\x03\x42\x10Z\x0epkg/sinopacapib\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n*trade_agent_protobuf/src/trade_agent.proto\x12\x14trade_agent_protobuf\"a\n\x14RealTimeTickResponse\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12\x37\n\x04tick\x18\x02 \x01(\x0b\x32).trade_agent_protobuf.RealTimeTickMessage\"\xa9\x03\n\x13RealTimeTickMessage\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x0c\n\x04open\x18\x03 \x01(\x01\x12\x11\n\tavg_price\x18\x04 \x01(\x01\x12\r\n\x05\x63lose\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\x0e\n\x06\x61mount\x18\x08 \x01(\x01\x12\x14\n\x0ctotal_amount\x18\t \x01(\x01\x12\x0e\n\x06volume\x18\n \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0b \x01(\x03\x12\x11\n\ttick_type\x18\x0c \x01(\x03\x12\x10\n\x08\x63hg_type\x18\r \x01(\x03\x12\x11\n\tprice_chg\x18\x0e \x01(\x01\x12\x0f\n\x07pct_chg\x18\x0f \x01(\x01\x12\x1a\n\x12\x62id_side_total_vol\x18\x10 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_vol\x18\x11 \x01(\x03\x12\x1a\n\x12\x62id_side_total_cnt\x18\x12 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_cnt\x18\x13 \x01(\x03\x12\x0f\n\x07suspend\x18\x14 \x01(\x03\x12\x10\n\x08simtrade\x18\x15 \x01(\x03\"M\n\x13HistoryTickResponse\x12\x36\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32(.trade_agent_protobuf.HistoryTickMessage\"\xa0\x01\n\x12HistoryTickMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x63lose\x18\x02 \x01(\x01\x12\x0e\n\x06volume\x18\x03 \x01(\x03\x12\x11\n\tbid_price\x18\x04 \x01(\x01\x12\x12\n\nbid_volume\x18\x05 \x01(\x03\x12\x11\n\task_price\x18\x06 \x01(\x01\x12\x12\n\nask_volume\x18\x07 \x01(\x03\x12\x11\n\ttick_type\x18\x08 \x01(\x03\"X\n\x0e\x42idAskResponse\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12\x34\n\x07\x62id_ask\x18\x02 \x01(\x0b\x32#.trade_agent_protobuf.BidAskMessage\"\xcd\x01\n\rBidAskMessage\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x11\n\tbid_price\x18\x03 \x03(\x01\x12\x12\n\nbid_volume\x18\x04 \x03(\x03\x12\x14\n\x0c\x64iff_bid_vol\x18\x05 \x03(\x03\x12\x11\n\task_price\x18\x06 \x03(\x01\x12\x12\n\nask_volume\x18\x07 \x03(\x03\x12\x14\n\x0c\x64iff_ask_vol\x18\x08 \x03(\x03\x12\x0f\n\x07suspend\x18\t \x01(\x03\x12\x10\n\x08simtrade\x18\n \x01(\x03\"?\n\x0cKbarResponse\x12/\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32!.trade_agent_protobuf.KbarMessage\"a\n\x0bKbarMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x43lose\x18\x02 \x01(\x01\x12\x0c\n\x04Open\x18\x03 \x01(\x01\x12\x0c\n\x04High\x18\x04 \x01(\x01\x12\x0b\n\x03Low\x18\x05 \x01(\x01\x12\x0e\n\x06Volume\x18\x06 \x01(\x03\"G\n\x10SnapshotResponse\x12\x33\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32%.trade_agent_protobuf.SnapshotMessage\"\xab\x03\n\x0fSnapshotMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x10\n\x08\x65xchange\x18\x03 \x01(\t\x12\x0c\n\x04open\x18\x04 \x01(\x01\x12\x0c\n\x04high\x18\x05 \x01(\x01\x12\x0b\n\x03low\x18\x06 \x01(\x01\x12\r\n\x05\x63lose\x18\x07 \x01(\x01\x12\x11\n\ttick_type\x18\x08 \x01(\t\x12\x14\n\x0c\x63hange_price\x18\t \x01(\x01\x12\x13\n\x0b\x63hange_rate\x18\n \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0b \x01(\t\x12\x15\n\raverage_price\x18\x0c \x01(\x01\x12\x0e\n\x06volume\x18\r \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0e \x01(\x03\x12\x0e\n\x06\x61mount\x18\x0f \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x10 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x11 \x01(\x01\x12\x11\n\tbuy_price\x18\x12 \x01(\x01\x12\x12\n\nbuy_volume\x18\x13 \x01(\x01\x12\x12\n\nsell_price\x18\x14 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x15 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x16 \x01(\x01\"S\n\rEventResponse\x12\x11\n\tresp_code\x18\x01 \x01(\x03\x12\x12\n\nevent_code\x18\x02 \x01(\x03\x12\x0c\n\x04info\x18\x03 \x01(\t\x12\r\n\x05\x65vent\x18\x04 \x01(\t\"M\n\x13TradeRecordResponse\x12\x36\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32(.trade_agent_protobuf.TradeRecordMessage\"\x83\x01\n\x12TradeRecordMessage\x12\x10\n\x08quantity\x18\x01 \x01(\x03\x12\r\n\x05price\x18\x02 \x01(\x01\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\x12\x0c\n\x04\x63ode\x18\x04 \x01(\t\x12\n\n\x02id\x18\x05 \x01(\t\x12\x12\n\norder_time\x18\x06 \x01(\t\x12\x0e\n\x06status\x18\x07 \x01(\t\"K\n\x12VolumeRankResponse\x12\x35\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\'.trade_agent_protobuf.VolumeRankMessage\"\x89\x04\n\x11VolumeRankMessage\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\n\n\x02ts\x18\x04 \x01(\x03\x12\x0c\n\x04open\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\r\n\x05\x63lose\x18\x08 \x01(\x01\x12\x13\n\x0bprice_range\x18\t \x01(\x01\x12\x11\n\ttick_type\x18\n \x01(\x03\x12\x14\n\x0c\x63hange_price\x18\x0b \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0c \x01(\x03\x12\x15\n\raverage_price\x18\r \x01(\x01\x12\x0e\n\x06volume\x18\x0e \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0f \x01(\x03\x12\x0e\n\x06\x61mount\x18\x10 \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x11 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x12 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x13 \x01(\x01\x12\x11\n\tbuy_price\x18\x14 \x01(\x01\x12\x12\n\nbuy_volume\x18\x15 \x01(\x03\x12\x12\n\nsell_price\x18\x16 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x17 \x01(\x03\x12\x12\n\nbid_orders\x18\x18 \x01(\x03\x12\x13\n\x0b\x62id_volumes\x18\x19 \x01(\x03\x12\x12\n\nask_orders\x18\x1a \x01(\x03\x12\x13\n\x0b\x61sk_volumes\x18\x1b \x01(\x03\x42\x10Z\x0epkg/sinopacapib\x06proto3')
 
 
 
-_BIDASKPROTO = DESCRIPTOR.message_types_by_name['BidAskProto']
-_BIDASKPROTO_BIDASKDATA = _BIDASKPROTO.nested_types_by_name['BidAskData']
-_ENTIRETICKARRPROTO = DESCRIPTOR.message_types_by_name['EntireTickArrProto']
-_ENTIRETICKPROTO = DESCRIPTOR.message_types_by_name['EntireTickProto']
-_KBARARRPROTO = DESCRIPTOR.message_types_by_name['KbarArrProto']
-_KBARPROTO = DESCRIPTOR.message_types_by_name['KbarProto']
-_SNAPSHOTARRPROTO = DESCRIPTOR.message_types_by_name['SnapShotArrProto']
-_SNAPSHOTPROTO = DESCRIPTOR.message_types_by_name['SnapShotProto']
-_STREAMTICKPROTO = DESCRIPTOR.message_types_by_name['StreamTickProto']
-_STREAMTICKPROTO_TICKDATA = _STREAMTICKPROTO.nested_types_by_name['TickData']
-_EVENTPROTO = DESCRIPTOR.message_types_by_name['EventProto']
-_TRADERECORDARRPROTO = DESCRIPTOR.message_types_by_name['TradeRecordArrProto']
-_TRADERECORDPROTO = DESCRIPTOR.message_types_by_name['TradeRecordProto']
-_VOLUMERANKARRPROTO = DESCRIPTOR.message_types_by_name['VolumeRankArrProto']
-_VOLUMERANKPROTO = DESCRIPTOR.message_types_by_name['VolumeRankProto']
-BidAskProto = _reflection.GeneratedProtocolMessageType('BidAskProto', (_message.Message,), {
-
-  'BidAskData' : _reflection.GeneratedProtocolMessageType('BidAskData', (_message.Message,), {
-    'DESCRIPTOR' : _BIDASKPROTO_BIDASKDATA,
-    '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-    # @@protoc_insertion_point(class_scope:trade_agent_protobuf.BidAskProto.BidAskData)
-    })
-  ,
-  'DESCRIPTOR' : _BIDASKPROTO,
+_REALTIMETICKRESPONSE = DESCRIPTOR.message_types_by_name['RealTimeTickResponse']
+_REALTIMETICKMESSAGE = DESCRIPTOR.message_types_by_name['RealTimeTickMessage']
+_HISTORYTICKRESPONSE = DESCRIPTOR.message_types_by_name['HistoryTickResponse']
+_HISTORYTICKMESSAGE = DESCRIPTOR.message_types_by_name['HistoryTickMessage']
+_BIDASKRESPONSE = DESCRIPTOR.message_types_by_name['BidAskResponse']
+_BIDASKMESSAGE = DESCRIPTOR.message_types_by_name['BidAskMessage']
+_KBARRESPONSE = DESCRIPTOR.message_types_by_name['KbarResponse']
+_KBARMESSAGE = DESCRIPTOR.message_types_by_name['KbarMessage']
+_SNAPSHOTRESPONSE = DESCRIPTOR.message_types_by_name['SnapshotResponse']
+_SNAPSHOTMESSAGE = DESCRIPTOR.message_types_by_name['SnapshotMessage']
+_EVENTRESPONSE = DESCRIPTOR.message_types_by_name['EventResponse']
+_TRADERECORDRESPONSE = DESCRIPTOR.message_types_by_name['TradeRecordResponse']
+_TRADERECORDMESSAGE = DESCRIPTOR.message_types_by_name['TradeRecordMessage']
+_VOLUMERANKRESPONSE = DESCRIPTOR.message_types_by_name['VolumeRankResponse']
+_VOLUMERANKMESSAGE = DESCRIPTOR.message_types_by_name['VolumeRankMessage']
+RealTimeTickResponse = _reflection.GeneratedProtocolMessageType('RealTimeTickResponse', (_message.Message,), {
+  'DESCRIPTOR' : _REALTIMETICKRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.BidAskProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.RealTimeTickResponse)
   })
-_sym_db.RegisterMessage(BidAskProto)
-_sym_db.RegisterMessage(BidAskProto.BidAskData)
+_sym_db.RegisterMessage(RealTimeTickResponse)
 
-EntireTickArrProto = _reflection.GeneratedProtocolMessageType('EntireTickArrProto', (_message.Message,), {
-  'DESCRIPTOR' : _ENTIRETICKARRPROTO,
+RealTimeTickMessage = _reflection.GeneratedProtocolMessageType('RealTimeTickMessage', (_message.Message,), {
+  'DESCRIPTOR' : _REALTIMETICKMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.EntireTickArrProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.RealTimeTickMessage)
   })
-_sym_db.RegisterMessage(EntireTickArrProto)
+_sym_db.RegisterMessage(RealTimeTickMessage)
 
-EntireTickProto = _reflection.GeneratedProtocolMessageType('EntireTickProto', (_message.Message,), {
-  'DESCRIPTOR' : _ENTIRETICKPROTO,
+HistoryTickResponse = _reflection.GeneratedProtocolMessageType('HistoryTickResponse', (_message.Message,), {
+  'DESCRIPTOR' : _HISTORYTICKRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.EntireTickProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.HistoryTickResponse)
   })
-_sym_db.RegisterMessage(EntireTickProto)
+_sym_db.RegisterMessage(HistoryTickResponse)
 
-KbarArrProto = _reflection.GeneratedProtocolMessageType('KbarArrProto', (_message.Message,), {
-  'DESCRIPTOR' : _KBARARRPROTO,
+HistoryTickMessage = _reflection.GeneratedProtocolMessageType('HistoryTickMessage', (_message.Message,), {
+  'DESCRIPTOR' : _HISTORYTICKMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.KbarArrProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.HistoryTickMessage)
   })
-_sym_db.RegisterMessage(KbarArrProto)
+_sym_db.RegisterMessage(HistoryTickMessage)
 
-KbarProto = _reflection.GeneratedProtocolMessageType('KbarProto', (_message.Message,), {
-  'DESCRIPTOR' : _KBARPROTO,
+BidAskResponse = _reflection.GeneratedProtocolMessageType('BidAskResponse', (_message.Message,), {
+  'DESCRIPTOR' : _BIDASKRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.KbarProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.BidAskResponse)
   })
-_sym_db.RegisterMessage(KbarProto)
+_sym_db.RegisterMessage(BidAskResponse)
 
-SnapShotArrProto = _reflection.GeneratedProtocolMessageType('SnapShotArrProto', (_message.Message,), {
-  'DESCRIPTOR' : _SNAPSHOTARRPROTO,
+BidAskMessage = _reflection.GeneratedProtocolMessageType('BidAskMessage', (_message.Message,), {
+  'DESCRIPTOR' : _BIDASKMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.SnapShotArrProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.BidAskMessage)
   })
-_sym_db.RegisterMessage(SnapShotArrProto)
+_sym_db.RegisterMessage(BidAskMessage)
 
-SnapShotProto = _reflection.GeneratedProtocolMessageType('SnapShotProto', (_message.Message,), {
-  'DESCRIPTOR' : _SNAPSHOTPROTO,
+KbarResponse = _reflection.GeneratedProtocolMessageType('KbarResponse', (_message.Message,), {
+  'DESCRIPTOR' : _KBARRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.SnapShotProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.KbarResponse)
   })
-_sym_db.RegisterMessage(SnapShotProto)
+_sym_db.RegisterMessage(KbarResponse)
 
-StreamTickProto = _reflection.GeneratedProtocolMessageType('StreamTickProto', (_message.Message,), {
-
-  'TickData' : _reflection.GeneratedProtocolMessageType('TickData', (_message.Message,), {
-    'DESCRIPTOR' : _STREAMTICKPROTO_TICKDATA,
-    '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-    # @@protoc_insertion_point(class_scope:trade_agent_protobuf.StreamTickProto.TickData)
-    })
-  ,
-  'DESCRIPTOR' : _STREAMTICKPROTO,
+KbarMessage = _reflection.GeneratedProtocolMessageType('KbarMessage', (_message.Message,), {
+  'DESCRIPTOR' : _KBARMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.StreamTickProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.KbarMessage)
   })
-_sym_db.RegisterMessage(StreamTickProto)
-_sym_db.RegisterMessage(StreamTickProto.TickData)
+_sym_db.RegisterMessage(KbarMessage)
 
-EventProto = _reflection.GeneratedProtocolMessageType('EventProto', (_message.Message,), {
-  'DESCRIPTOR' : _EVENTPROTO,
+SnapshotResponse = _reflection.GeneratedProtocolMessageType('SnapshotResponse', (_message.Message,), {
+  'DESCRIPTOR' : _SNAPSHOTRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.EventProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.SnapshotResponse)
   })
-_sym_db.RegisterMessage(EventProto)
+_sym_db.RegisterMessage(SnapshotResponse)
 
-TradeRecordArrProto = _reflection.GeneratedProtocolMessageType('TradeRecordArrProto', (_message.Message,), {
-  'DESCRIPTOR' : _TRADERECORDARRPROTO,
+SnapshotMessage = _reflection.GeneratedProtocolMessageType('SnapshotMessage', (_message.Message,), {
+  'DESCRIPTOR' : _SNAPSHOTMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.TradeRecordArrProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.SnapshotMessage)
   })
-_sym_db.RegisterMessage(TradeRecordArrProto)
+_sym_db.RegisterMessage(SnapshotMessage)
 
-TradeRecordProto = _reflection.GeneratedProtocolMessageType('TradeRecordProto', (_message.Message,), {
-  'DESCRIPTOR' : _TRADERECORDPROTO,
+EventResponse = _reflection.GeneratedProtocolMessageType('EventResponse', (_message.Message,), {
+  'DESCRIPTOR' : _EVENTRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.TradeRecordProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.EventResponse)
   })
-_sym_db.RegisterMessage(TradeRecordProto)
+_sym_db.RegisterMessage(EventResponse)
 
-VolumeRankArrProto = _reflection.GeneratedProtocolMessageType('VolumeRankArrProto', (_message.Message,), {
-  'DESCRIPTOR' : _VOLUMERANKARRPROTO,
+TradeRecordResponse = _reflection.GeneratedProtocolMessageType('TradeRecordResponse', (_message.Message,), {
+  'DESCRIPTOR' : _TRADERECORDRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.VolumeRankArrProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.TradeRecordResponse)
   })
-_sym_db.RegisterMessage(VolumeRankArrProto)
+_sym_db.RegisterMessage(TradeRecordResponse)
 
-VolumeRankProto = _reflection.GeneratedProtocolMessageType('VolumeRankProto', (_message.Message,), {
-  'DESCRIPTOR' : _VOLUMERANKPROTO,
+TradeRecordMessage = _reflection.GeneratedProtocolMessageType('TradeRecordMessage', (_message.Message,), {
+  'DESCRIPTOR' : _TRADERECORDMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.VolumeRankProto)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.TradeRecordMessage)
   })
-_sym_db.RegisterMessage(VolumeRankProto)
+_sym_db.RegisterMessage(TradeRecordMessage)
+
+VolumeRankResponse = _reflection.GeneratedProtocolMessageType('VolumeRankResponse', (_message.Message,), {
+  'DESCRIPTOR' : _VOLUMERANKRESPONSE,
+  '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.VolumeRankResponse)
+  })
+_sym_db.RegisterMessage(VolumeRankResponse)
+
+VolumeRankMessage = _reflection.GeneratedProtocolMessageType('VolumeRankMessage', (_message.Message,), {
+  'DESCRIPTOR' : _VOLUMERANKMESSAGE,
+  '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.VolumeRankMessage)
+  })
+_sym_db.RegisterMessage(VolumeRankMessage)
 
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'Z\016pkg/sinopacapi'
-  _BIDASKPROTO._serialized_start=69
-  _BIDASKPROTO._serialized_end=368
-  _BIDASKPROTO_BIDASKDATA._serialized_start=166
-  _BIDASKPROTO_BIDASKDATA._serialized_end=368
-  _ENTIRETICKARRPROTO._serialized_start=370
-  _ENTIRETICKARRPROTO._serialized_end=443
-  _ENTIRETICKPROTO._serialized_start=446
-  _ENTIRETICKPROTO._serialized_end=603
-  _KBARARRPROTO._serialized_start=605
-  _KBARARRPROTO._serialized_end=666
-  _KBARPROTO._serialized_start=668
-  _KBARPROTO._serialized_end=763
-  _SNAPSHOTARRPROTO._serialized_start=765
-  _SNAPSHOTARRPROTO._serialized_end=834
-  _SNAPSHOTPROTO._serialized_start=837
-  _SNAPSHOTPROTO._serialized_end=1262
-  _STREAMTICKPROTO._serialized_start=1265
-  _STREAMTICKPROTO._serialized_end=1779
-  _STREAMTICKPROTO_TICKDATA._serialized_start=1365
-  _STREAMTICKPROTO_TICKDATA._serialized_end=1779
-  _EVENTPROTO._serialized_start=1781
-  _EVENTPROTO._serialized_end=1861
-  _TRADERECORDARRPROTO._serialized_start=1863
-  _TRADERECORDARRPROTO._serialized_end=1938
-  _TRADERECORDPROTO._serialized_start=1941
-  _TRADERECORDPROTO._serialized_end=2070
-  _VOLUMERANKARRPROTO._serialized_start=2072
-  _VOLUMERANKARRPROTO._serialized_end=2145
-  _VOLUMERANKPROTO._serialized_start=2148
-  _VOLUMERANKPROTO._serialized_end=2667
+  _REALTIMETICKRESPONSE._serialized_start=68
+  _REALTIMETICKRESPONSE._serialized_end=165
+  _REALTIMETICKMESSAGE._serialized_start=168
+  _REALTIMETICKMESSAGE._serialized_end=593
+  _HISTORYTICKRESPONSE._serialized_start=595
+  _HISTORYTICKRESPONSE._serialized_end=672
+  _HISTORYTICKMESSAGE._serialized_start=675
+  _HISTORYTICKMESSAGE._serialized_end=835
+  _BIDASKRESPONSE._serialized_start=837
+  _BIDASKRESPONSE._serialized_end=925
+  _BIDASKMESSAGE._serialized_start=928
+  _BIDASKMESSAGE._serialized_end=1133
+  _KBARRESPONSE._serialized_start=1135
+  _KBARRESPONSE._serialized_end=1198
+  _KBARMESSAGE._serialized_start=1200
+  _KBARMESSAGE._serialized_end=1297
+  _SNAPSHOTRESPONSE._serialized_start=1299
+  _SNAPSHOTRESPONSE._serialized_end=1370
+  _SNAPSHOTMESSAGE._serialized_start=1373
+  _SNAPSHOTMESSAGE._serialized_end=1800
+  _EVENTRESPONSE._serialized_start=1802
+  _EVENTRESPONSE._serialized_end=1885
+  _TRADERECORDRESPONSE._serialized_start=1887
+  _TRADERECORDRESPONSE._serialized_end=1964
+  _TRADERECORDMESSAGE._serialized_start=1967
+  _TRADERECORDMESSAGE._serialized_end=2098
+  _VOLUMERANKRESPONSE._serialized_start=2100
+  _VOLUMERANKRESPONSE._serialized_end=2175
+  _VOLUMERANKMESSAGE._serialized_start=2178
+  _VOLUMERANKMESSAGE._serialized_end=2699
 # @@protoc_insertion_point(module_scope)
