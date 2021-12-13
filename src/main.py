@@ -31,8 +31,7 @@ swagger = Swagger(api)
 token = sj.Shioaji()
 session = requests.Session()
 mutex = threading.Lock()
-mqtt_client = paho.Client(client_id="sinopac-srv-" +
-                          str(random.randrange(10000)))
+mqtt_client = paho.Client()
 
 log_format = str()
 extension_name = str()
@@ -1564,25 +1563,31 @@ def server_up_time():
 
 
 def connect_mqtt_broker(mq_host: str, mq_port: int, user_name: str, passwd: str):
-    mqtt_client.tls_set(
+    '''Connect to MQTT Broker'''
+    global mqtt_client  # pylint: disable=global-statement
+    if mqtt_client.is_connected() is True:
+        logger.warning('Disconnect original connection')
+        mqtt_client.loop_stop()
+        mqtt_client.disconnect()
+    logger.info('New MQTT connection')
+    new_client = paho.Client(client_id="sinopac-srv-" +
+                             str(random.randrange(10000)))
+    new_client.tls_set(
         ca_certs="./configs/certs/ca_crt.pem",
         certfile="./configs/certs/client_crt.pem",
         keyfile="./configs/certs/client_key.pem",
         cert_reqs=ssl.CERT_NONE,
         tls_version=ssl.PROTOCOL_TLSv1_2,
     )
-    mqtt_client.username_pw_set(user_name, passwd)
-    mqtt_client.tls_insecure_set(True)
-    mqtt_client.connect(
+    new_client.username_pw_set(user_name, passwd)
+    new_client.tls_insecure_set(True)
+    new_client.connect(
         host=mq_host,
         port=mq_port,
         keepalive=60,
     )
-    if mqtt_client.is_connected is False:
-        logger.error('MQTT Connect Fail')
-        time.sleep(3)
-        return -1
-    mqtt_client.loop_start()
+    new_client.loop_start()
+    mqtt_client = new_client
     return 0
 
 

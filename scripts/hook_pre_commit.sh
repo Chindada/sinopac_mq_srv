@@ -49,12 +49,12 @@ fi
 git diff-index --check --cached $against --
 
 # Trade Bot Sino Hook
-pylint ./src/main.py > pylint_result
+pylint ./src/main.py ./src/mq_topic.py > pylint_result
 if ! grep 10.00/10 pylint_result
 then
 	exit 1
 fi
-mypy --config-file=./mypy.ini ./src/main.py > mypy_result
+mypy --config-file=./mypy.ini ./src/main.py ./src/mq_topic.py > mypy_result
 if grep error mypy_result
 then
 	exit 1
