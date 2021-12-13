@@ -3,7 +3,6 @@
 '''SINOPAC PYTHON API FORWARDER'''
 from re import search
 from datetime import datetime
-from random import randrange
 import threading
 import time
 import ssl
@@ -16,10 +15,9 @@ import typing
 import requests
 import shioaji as sj
 import paho.mqtt.client as paho
-from flask import Flask,  request, jsonify, make_response
+from flask import Flask,  request, jsonify
 from flasgger import Swagger
 from waitress import serve
-from shioaji import BidAskSTKv1, TickSTKv1, Exchange, constant, error
 from protobuf import trade_agent_pb2
 import mq_topic
 
@@ -33,7 +31,8 @@ swagger = Swagger(api)
 token = sj.Shioaji()
 session = requests.Session()
 mutex = threading.Lock()
-mqtt_client = paho.Client(client_id="sinopac-srv-"+str(randrange(10000)))
+mqtt_client = paho.Client(client_id="sinopac-srv-" +
+                          str(random.randrange(10000)))
 
 log_format = str()
 extension_name = str()
@@ -75,15 +74,24 @@ FUTURE_SUB_LIST: typing.List[str] = []
 
 @ api.route('/sinopac-mq-srv/basic/stock-detail', methods=['GET'])
 def get_all_stock_detail():
-    '''Get all stock detail from contracts and send to MQTT
+    '''Get all stock detail from contracts and send to 'internal/stock_detail'
     ---
     tags:
-      - basic
+      - Basic
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
+    definitions:
+      Result:
+        type: object
+        properties:
+          result:
+            type: string
     '''
     response = trade_agent_pb2.StockResponse()
     for row in ALL_STOCK_NUM_LIST:
@@ -104,19 +112,22 @@ def get_all_stock_detail():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_stock_detail,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/real-time/all-snapshot', methods=['GET'])
 def get_all_snapshot():
-    '''Get all stock latest snapshot and send to MQTT
+    '''Get all stock latest snapshot and send to 'internal/snapshot_all'
     ---
     tags:
-      - data
+      - RealTime
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -153,19 +164,22 @@ def get_all_snapshot():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_all_snapshot,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/real-time/snapshot/tse', methods=['GET'])
 def get_tse_snapshot():
-    '''Get TSE latest snapshot and send to MQTT
+    '''Get TSE latest snapshot and send to 'internal/snapshot_tse'
     ---
     tags:
-      - data
+      - RealTime
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -201,16 +215,16 @@ def get_tse_snapshot():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_tse_snapshot,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/tick', methods=['POST'])
 def get_history_tick_by_stock_num_date():
-    '''Get all history tick in one date and send to MQTT
+    '''Get all history tick in one date and send to 'internal/history_tick'
     ---
     tags:
-      - data
+      - History
     parameters:
       - in: body
         name: stock with date
@@ -221,6 +235,9 @@ def get_history_tick_by_stock_num_date():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -251,9 +268,7 @@ def get_history_tick_by_stock_num_date():
     tmp_length.append(len(ticks.ask_volume))
     for length in tmp_length:
         if length - total_count != 0:
-            resp = make_response(response.SerializeToString())
-            resp.headers['Content-Type'] = 'application/protobuf'
-            return resp
+            return jsonify({'result': 'data broken'})
     for pos in range(total_count):
         tmp = trade_agent_pb2.HistoryTickMessage()
         tmp.ts = ticks.ts[pos]
@@ -268,16 +283,16 @@ def get_history_tick_by_stock_num_date():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_history_tick,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/tick/tse', methods=['POST'])
 def get_tse_history_tick_by_date():
-    '''Get tse tick in one date and send to MQTT
+    '''Get tse tick in one date and send to 'internal/history_tick_tse'
     ---
     tags:
-      - data
+      - TSE
     parameters:
       - in: body
         name: fetch date
@@ -288,6 +303,9 @@ def get_tse_history_tick_by_date():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -316,9 +334,7 @@ def get_tse_history_tick_by_date():
     tmp_length.append(len(ticks.ask_volume))
     for length in tmp_length:
         if length - total_count != 0:
-            resp = make_response(response.SerializeToString())
-            resp.headers['Content-Type'] = 'application/protobuf'
-            return resp
+            return jsonify({'result': 'data broken'})
     for pos in range(total_count):
         tmp = trade_agent_pb2.HistoryTickMessage()
         tmp.ts = ticks.ts[pos]
@@ -333,16 +349,16 @@ def get_tse_history_tick_by_date():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_tse_thistory_tick,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/kbar', methods=['POST'])
 def get_kbar_by_stock_num_date_range():
-    '''Get all kbar in date range and send to MQTT
+    '''Get all kbar in date range and send to 'internal/history_kbar'
     ---
     tags:
-      - data
+      - History
     parameters:
       - in: body
         name: stock with date range
@@ -353,6 +369,9 @@ def get_kbar_by_stock_num_date_range():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -385,9 +404,7 @@ def get_kbar_by_stock_num_date_range():
     tmp_length.append(len(kbar.Volume))
     for length in tmp_length:
         if length - total_count != 0:
-            resp = make_response(response.SerializeToString())
-            resp.headers['Content-Type'] = 'application/protobuf'
-            return resp
+            return jsonify({'result': 'data broken'})
     for pos in range(total_count):
         tmp = trade_agent_pb2.KbarMessage()
         tmp.ts = kbar.ts[pos]
@@ -400,16 +417,16 @@ def get_kbar_by_stock_num_date_range():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_history_kbar,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/kbar/tse', methods=['POST'])
 def get_tse_kbar_by_stock_num_date_range():
-    '''Get tse kbar in date range
+    '''Get tse kbar in date range and send to 'internal/history_kbar_tse'
     ---
     tags:
-      - data
+      - TSE
     parameters:
       - in: body
         name: Date range
@@ -420,6 +437,9 @@ def get_tse_kbar_by_stock_num_date_range():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -450,9 +470,7 @@ def get_tse_kbar_by_stock_num_date_range():
     tmp_length.append(len(kbar.Volume))
     for length in tmp_length:
         if length - total_count != 0:
-            resp = make_response(response.SerializeToString())
-            resp.headers['Content-Type'] = 'application/protobuf'
-            return resp
+            return jsonify({'result': 'data broken'})
     for pos in range(total_count):
         tmp = trade_agent_pb2.KbarMessage()
         tmp.ts = kbar.ts[pos]
@@ -465,16 +483,16 @@ def get_tse_kbar_by_stock_num_date_range():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_tse_history_kbar,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/lastcount', methods=['POST'])
-def lastcount():
-    '''Get stock's last count
+def get_lastcount_by_stock_arr_and_date():
+    '''Get stock's last count and send to 'internal/lastcount'
     ---
     tags:
-      - data
+      - History
     parameters:
       - in: header
         name: X-Date
@@ -489,6 +507,9 @@ def lastcount():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -522,16 +543,16 @@ def lastcount():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_lastcount,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/lastcount/tse', methods=['POST'])
-def lastcount_tse():
-    '''Get tse's last count
+def get_lastcount_tse_by_date():
+    '''Get tse's last count and send to 'internal/lastcount_tse'
     ---
     tags:
-      - data
+      - TSE
     parameters:
       - in: header
         name: X-Date
@@ -540,6 +561,9 @@ def lastcount_tse():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -560,16 +584,16 @@ def lastcount_tse():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_lastcount_tse,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/lastcount/multi-date', methods=['POST'])
-def lastcount_multi_date():
-    '''Get stock's last count in a date range
+def get_lastcount_by_stock_arr_and_date_arr():
+    '''Get stock's last count in a date range and send to 'internal/lastcount_multi_date'
     ---
     tags:
-      - data
+      - History
     parameters:
       - in: body
         name: stock array
@@ -580,6 +604,9 @@ def lastcount_multi_date():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -623,16 +650,16 @@ def lastcount_multi_date():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_lastcount_multi_date,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/history/volumerank', methods=['GET'])
-def volumerank():
-    '''Get rank 200 volume and close
+def get_volumerank_by_count_and_date():
+    '''Get rank volume and send to 'internal/volumerank'
     ---
     tags:
-      - data
+      - History
     parameters:
       - in: header
         name: X-Count
@@ -641,6 +668,9 @@ def volumerank():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -652,6 +682,8 @@ def volumerank():
         date=req_date,
     )
     response = trade_agent_pb2.VolumeRankResponse()
+    response.count = rank_count
+    response.date = req_date
     for result in ranks:
         tmp = trade_agent_pb2.VolumeRankMessage()
         tmp.date = result.date
@@ -685,16 +717,16 @@ def volumerank():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_history_volumerank,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/subscribe/streamtick', methods=['POST'])
-def stream():
+def subscribe_stock_realtime_tick_by_stock_arr():
     '''Subscribe streamtick
     ---
     tags:
-      - Subscribe streamtick
+      - SubscribeRealTimeTick
     parameters:
       - in: body
         name: stock array
@@ -705,6 +737,9 @@ def stream():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -718,15 +753,15 @@ def stream():
             quote_type=sj.constant.QuoteType.Tick,
             version=sj.constant.QuoteVersion.v1
         )
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/unsubscribe/streamtick', methods=['POST'])
-def un_stream():
+def unsubscribe_stock_realtime_tick_by_stock_arr():
     '''UnSubscribe streamtick
     ---
     tags:
-      - Subscribe streamtick
+      - SubscribeRealTimeTick
     parameters:
       - in: body
         name: stock array
@@ -737,6 +772,9 @@ def un_stream():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -750,18 +788,21 @@ def un_stream():
             quote_type=sj.constant.QuoteType.Tick,
             version=sj.constant.QuoteVersion.v1
         )
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/unsubscribeall/streamtick', methods=['GET'])
-def unstream_all():
+def unsubscribe_all_stock_realtime_tick():
     '''Unubscribe all streamtick
     ---
     tags:
-      - Subscribe streamtick
+      - SubscribeRealTimeTick
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -775,15 +816,15 @@ def unstream_all():
                 version=sj.constant.QuoteVersion.v1
             )
         QUOTE_SUB_LIST = []
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/subscribe/bid-ask', methods=['POST'])
-def bid_ask():
+def subscribe_stock_realtime_bidask_by_stock_arr():
     '''Subscribe bid-ask
     ---
     tags:
-      - Subscribe bid-ask
+      - SubscribeBidAsk
     parameters:
       - in: body
         name: stock array
@@ -794,6 +835,9 @@ def bid_ask():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -817,15 +861,15 @@ def bid_ask():
             quote_type=sj.constant.QuoteType.BidAsk,
             version=sj.constant.QuoteVersion.v1
         )
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/unsubscribe/bid-ask', methods=['POST'])
-def un_bid_ask():
+def unsubscribe_stock_realtime_bidask_by_stock_arr():
     '''UnSubscribe bid-ask
     ---
     tags:
-      - Subscribe bid-ask
+      - SubscribeBidAsk
     parameters:
       - in: body
         name: stock array
@@ -836,6 +880,9 @@ def un_bid_ask():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -859,18 +906,21 @@ def un_bid_ask():
             quote_type=sj.constant.QuoteType.BidAsk,
             version=sj.constant.QuoteVersion.v1
         )
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/unsubscribeall/bid-ask', methods=['GET'])
-def unstream_bid_ask_all():
+def unsubscribe_all_stock_realtime_bidask():
     '''Unsubscribe all bid-ask
     ---
     tags:
-      - Subscribe bid-ask
+      - SubscribeBidAsk
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
@@ -884,15 +934,15 @@ def unstream_bid_ask_all():
                 version=sj.constant.QuoteVersion.v1
             )
         BIDASK_SUB_LIST = []
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/trade/buy', methods=['POST'])
-def buy():
+def buy_stock():
     '''Buy stock
     ---
     tags:
-      - trade
+      - Trade
     parameters:
       - in: body
         name: order
@@ -903,6 +953,9 @@ def buy():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/OrderSuccess'
       500:
         description: Server Not Ready
     definitions:
@@ -915,6 +968,13 @@ def buy():
             type: number
           quantity:
             type: integer
+      OrderSuccess:
+        type: object
+        properties:
+          status:
+            type: string
+          order_id:
+            type: string
     '''
     body = request.get_json()
     contract = token.Contracts.Stocks[body['stock']]
@@ -929,21 +989,24 @@ def buy():
     )
     trade = token.place_order(contract, order)
     if trade is not None and trade.order.id != '':
-        if trade.status.status == constant.Status.Cancelled:
+        if trade.status.status == sj.constant.Status.Cancelled:
             trade.status.status = 'Canceled'
         return jsonify({
             'status': trade.status.status,
             'order_id': trade.order.id,
         })
-    return jsonify({'status': 'fail'})
+    return jsonify({
+        'status': 'fail',
+        'order_id': '',
+    })
 
 
 @ api.route('/sinopac-mq-srv/trade/sell', methods=['POST'])
-def sell():
+def sell_stock():
     '''Sell stock
     ---
     tags:
-      - trade
+      - Trade
     parameters:
       - in: body
         name: order
@@ -954,6 +1017,9 @@ def sell():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/OrderSuccess'
       500:
         description: Server Not Ready
     definitions:
@@ -980,21 +1046,24 @@ def sell():
     )
     trade = token.place_order(contract, order)
     if trade is not None and trade.order.id != '':
-        if trade.status.status == constant.Status.Cancelled:
+        if trade.status.status == sj.constant.Status.Cancelled:
             trade.status.status = 'Canceled'
         return jsonify({
             'status': trade.status.status,
             'order_id': trade.order.id,
         })
-    return jsonify({'status': 'fail'})
+    return jsonify({
+        'status': 'fail',
+        'order_id': '',
+    })
 
 
 @ api.route('/sinopac-mq-srv/trade/sell_first', methods=['POST'])
-def sell_first():
+def sell_first_stock():
     '''Sell stock first
     ---
     tags:
-      - trade
+      - Trade
     parameters:
       - in: body
         name: order
@@ -1005,6 +1074,9 @@ def sell_first():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/OrderSuccess'
       500:
         description: Server Not Ready
     definitions:
@@ -1032,21 +1104,24 @@ def sell_first():
     )
     trade = token.place_order(contract, order)
     if trade is not None and trade.order.id != '':
-        if trade.status.status == constant.Status.Cancelled:
+        if trade.status.status == sj.constant.Status.Cancelled:
             trade.status.status = 'Canceled'
         return jsonify({
             'status': trade.status.status,
             'order_id': trade.order.id,
         })
-    return jsonify({'status': 'fail'})
+    return jsonify({
+        'status': 'fail',
+        'order_id': '',
+    })
 
 
 @ api.route('/sinopac-mq-srv/trade/cancel', methods=['POST'])
-def cancel():
+def cancel_stock():
     '''Cancel order
     ---
     tags:
-      - trade
+      - Trade
     parameters:
       - in: body
         name: order id
@@ -1057,6 +1132,9 @@ def cancel():
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     definitions:
@@ -1078,9 +1156,9 @@ def cancel():
             break
         times += 1
     if cancel_order is None:
-        return jsonify({'status': 'cancel order not found'})
-    if cancel_order.status.status == constant.Status.Cancelled:
-        return jsonify({'status': 'order already be canceled'})
+        return jsonify({'result': 'cancel order not found'})
+    if cancel_order.status.status == sj.constant.Status.Cancelled:
+        return jsonify({'result': 'order already be canceled'})
     token.cancel_order(cancel_order)
     times = 0
     while True:
@@ -1088,47 +1166,53 @@ def cancel():
             break
         mutex_update_status(-1)
         for order in HISTORY_ORDERS:
-            if order.status.id == body['order_id'] and order.status.status == constant.Status.Cancelled:
-                return jsonify({'status': 'success'})
+            if order.status.id == body['order_id'] and order.status.status == sj.constant.Status.Cancelled:
+                return jsonify({'result': 'success'})
         times += 1
-    return jsonify({'status': 'fail'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/trade/status', methods=['GET'])
-def status():
+def get_order_status():
     '''Get order status
     ---
     tags:
-      - status
+      - TradeStatus
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
     try:
         mutex_update_status(0)
-    except error.TokenError:
+    except sj.error.TokenError:
         send_token_expired_event()
-    return jsonify({'status': 'success'})
+    return jsonify({'result': 'success'})
 
 
 @ api.route('/sinopac-mq-srv/trade/status-history', methods=['GET'])
-def trade_history():
-    '''Order history
+def get_order_status_from_local():
+    '''Fetch Order history and send to 'internal/order_status_history'
     ---
     tags:
-      - trade
+      - TradeStatus
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
     response = trade_agent_pb2.OrderStatusHistoryResponse()
     mutex_update_status(-1)
     if len(HISTORY_ORDERS) == 0:
-        return jsonify({'status': 'history not found'})
+        return jsonify({'result': 'history not found'})
     for order in HISTORY_ORDERS:
         order_price = int()
         if order.status.modified_price != 0:
@@ -1147,45 +1231,111 @@ def trade_history():
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_order_status_history,
                             payload=response.SerializeToString(), qos=2, retain=False)
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'fail'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
 
 
 @ api.route('/sinopac-mq-srv/system/healthcheck', methods=['GET'])
-def health_check():
+def get_health_check():
     '''Server health check
     ---
     tags:
-      - system
+      - System
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/HealthResponse'
       500:
         description: Server Not Ready
+    definitions:
+      HealthResponse:
+        type: object
+        properties:
+          result:
+            type: string
+          up_time_min:
+            type: number
+          server_token:
+            type: string
     '''
     return jsonify({
-        'status': 'success',
+        'result': 'success',
         'up_time_min': UP_TIME,
         'server_token': server_token,
     })
 
 
-@ api.route('/sinopac-mq-srv/system/restart', methods=['GET'])
-def restart():
-    '''Restart
+@ api.route('/sinopac-mq-srv/system/mq-connect', methods=['POST'])
+def get_mq_conf_to_connect():
+    '''Post to connect mqtt broker
     ---
     tags:
-      - system
+      - System
+    parameters:
+      - in: body
+        name: mq_conf
+        description: MQTT parameters
+        required: true
+        schema:
+          $ref: '#/definitions/MQConf'
     responses:
       200:
         description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
+      500:
+        description: Server Not Ready
+    definitions:
+      MQConf:
+        type: object
+        properties:
+          host:
+            type: string
+          port:
+            type: string
+          user:
+            type: string
+          password:
+            type: string
+    '''
+    body = request.get_json()
+    mq_host = body['host']
+    mq_port = body['port']
+    mq_user_name = body['user']
+    mq_password = body['password']
+    status = connect_mqtt_broker(
+        mq_host,
+        int(mq_port),
+        mq_user_name,
+        mq_password
+    )
+    if status == -1:
+        return jsonify({'result': 'fail'})
+    return jsonify({'result': 'success'})
+
+
+@ api.route('/sinopac-mq-srv/system/restart', methods=['GET'])
+def system_restart():
+    '''Restart
+    ---
+    tags:
+      - System
+    responses:
+      200:
+        description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
       500:
         description: Server Not Ready
     '''
     if deployment == 'docker':
         threading.Thread(target=run_pkill).start()
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'you should be in the docker container'})
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'you should be in the docker container'})
 
 
 def mutex_update_status(timeout: int):
@@ -1202,11 +1352,11 @@ def mutex_update_status(timeout: int):
 def order_status_callback(reply: typing.List[sj.order.Trade]):
     '''Sinopac order status's callback'''
     with mutex:
-        response = trade_agent_pb2.TradeRecordResponse()
+        response = trade_agent_pb2.OrderStatusHistoryResponse()
         if len(reply) != 0:
             for order in reply:
-                res = trade_agent_pb2.TradeRecordMessage()
-                if order.status.status == constant.Status.Cancelled:
+                res = trade_agent_pb2.OrderStatusHistoryMessage()
+                if order.status.status == sj.constant.Status.Cancelled:
                     order.status.status = 'Canceled'
                 if order.status.order_datetime is None:
                     order.status.order_datetime = datetime.now()
@@ -1219,7 +1369,7 @@ def order_status_callback(reply: typing.List[sj.order.Trade]):
                 res.action = order.order.action
                 res.price = order_price
                 res.quantity = order.order.quantity
-                res.id = order.status.id
+                res.order_id = order.status.id
                 res.status = order.status.status
                 res.order_time = datetime.strftime(
                     order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
@@ -1229,7 +1379,7 @@ def order_status_callback(reply: typing.List[sj.order.Trade]):
                                     payload=response.SerializeToString(), qos=2, retain=False)
 
 
-def quote_callback_v1(exchange: Exchange, tick: TickSTKv1):
+def quote_callback_v1(exchange: sj.Exchange, tick: sj.TickSTKv1):
     '''Sinopac's quiote callback v1'''
     response = trade_agent_pb2.RealTimeTickResponse()
     response.exchange = exchange
@@ -1260,7 +1410,7 @@ def quote_callback_v1(exchange: Exchange, tick: TickSTKv1):
                             payload=response.SerializeToString(), qos=2, retain=False)
 
 
-def bid_ask_callback(exchange: Exchange, bidask: BidAskSTKv1):
+def bid_ask_callback(exchange: sj.Exchange, bidask: sj.BidAskSTKv1):
     '''Sinopac's bidask callback'''
     response = trade_agent_pb2.RealTimeBidAskResponse()
     response.exchange = exchange
@@ -1292,7 +1442,19 @@ def event_callback(resp_code: int, event_code: int, info: str, event: str):
                             payload=response.SerializeToString(), qos=2, retain=False)
 
 
-def fill_all_stock_list():
+def send_token_expired_event():
+    '''Sinopac's event callback'''
+    response = trade_agent_pb2.EventResponse()
+    response.resp_code = 500
+    response.event_code = 401
+    response.info = 'Please resubscribe if there exits subscription'
+    response.event = 'Token is expired.'
+    if response.ByteSize != 0:
+        mqtt_client.publish(topic=mq_topic.topic_trade_event,
+                            payload=response.SerializeToString(), qos=2, retain=False)
+
+
+def fill_all_stock_local_list():
     '''Fill ALL_STOCK_NUM_LIST'''
     global ALL_STOCK_NUM_LIST  # pylint: disable=global-statement
     ALL_STOCK_NUM_LIST = []
@@ -1308,18 +1470,6 @@ def run_pkill():
     '''Restart in container'''
     time.sleep(1)
     os._exit(0)  # pylint: disable=protected-access
-
-
-def send_token_expired_event():
-    '''Sinopac's event callback'''
-    response = trade_agent_pb2.EventResponse()
-    response.resp_code = 500
-    response.event_code = 401
-    response.info = 'Please resubscribe if there exits subscription'
-    response.event = 'Token is expired.'
-    if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_trade_event,
-                            payload=response.SerializeToString(), qos=2, retain=False)
 
 
 def connection_err():
@@ -1342,7 +1492,7 @@ def reset_err():
         time.sleep(30)
 
 
-def place_order_callback(order_state: constant.OrderState, order: dict):
+def place_order_callback(order_state: sj.constant.OrderState, order: dict):
     '''Place order callback'''
     if search('DEAL', order_state) is None:
         logger.info('%s %s %.2f %d %s %d %s %s %s %s',
@@ -1370,7 +1520,7 @@ def place_order_callback(order_state: constant.OrderState, order: dict):
                     )
 
 
-def login_callback(security_type: constant.SecurityType):
+def login_callback(security_type: sj.constant.SecurityType):
     '''Login event callback'''
     with mutex:
         global SERVER_STATUS  # pylint: disable=global-statement
@@ -1380,7 +1530,7 @@ def login_callback(security_type: constant.SecurityType):
                            SERVER_STATUS, security_type)
 
 
-def sino_login():
+def sinopac_login():
     '''Login into sinopac'''
     token.login(
         person_id=TRADE_ID,
@@ -1413,7 +1563,7 @@ def server_up_time():
         UP_TIME += 1
 
 
-def connect_mqtt_broker():
+def connect_mqtt_broker(mq_host: str, mq_port: int, user_name: str, passwd: str):
     mqtt_client.tls_set(
         ca_certs="./configs/certs/ca_crt.pem",
         certfile="./configs/certs/client_crt.pem",
@@ -1421,11 +1571,11 @@ def connect_mqtt_broker():
         cert_reqs=ssl.CERT_NONE,
         tls_version=ssl.PROTOCOL_TLSv1_2,
     )
-    mqtt_client.username_pw_set('toc', 'asdf0000')
+    mqtt_client.username_pw_set(user_name, passwd)
     mqtt_client.tls_insecure_set(True)
     mqtt_client.connect(
-        host="172.20.10.250",
-        port=8887,
+        host=mq_host,
+        port=mq_port,
         keepalive=60,
     )
     if mqtt_client.is_connected is False:
@@ -1439,11 +1589,8 @@ def connect_mqtt_broker():
 if __name__ == '__main__':
     threading.Thread(target=reset_err).start()
     threading.Thread(target=server_up_time).start()
-    status = connect_mqtt_broker()
-    if status == -1:
-        run_pkill()
     set_sinopac_callback()
-    sino_login()
-    fill_all_stock_list()
+    sinopac_login()
+    fill_all_stock_local_list()
     logger.info('Server token: %s', server_token)
     serve(api, host='0.0.0.0', port=sys.argv[1])
