@@ -14,20 +14,20 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n*trade_agent_protobuf/src/trade_agent.proto\x12\x14trade_agent_protobuf\"B\n\rStockResponse\x12\x31\n\x05stock\x18\x01 \x03(\x0b\x32\".trade_agent_protobuf.StockMessage\"\x89\x01\n\x0cStockMessage\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x02 \x01(\t\x12\x0c\n\x04\x63ode\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12\x11\n\treference\x18\x05 \x01(\x01\x12\x13\n\x0bupdate_date\x18\x06 \x01(\t\x12\x11\n\tday_trade\x18\x07 \x01(\t\"G\n\x10SnapshotResponse\x12\x33\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32%.trade_agent_protobuf.SnapshotMessage\"\xab\x03\n\x0fSnapshotMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x10\n\x08\x65xchange\x18\x03 \x01(\t\x12\x0c\n\x04open\x18\x04 \x01(\x01\x12\x0c\n\x04high\x18\x05 \x01(\x01\x12\x0b\n\x03low\x18\x06 \x01(\x01\x12\r\n\x05\x63lose\x18\x07 \x01(\x01\x12\x11\n\ttick_type\x18\x08 \x01(\t\x12\x14\n\x0c\x63hange_price\x18\t \x01(\x01\x12\x13\n\x0b\x63hange_rate\x18\n \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0b \x01(\t\x12\x15\n\raverage_price\x18\x0c \x01(\x01\x12\x0e\n\x06volume\x18\r \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0e \x01(\x03\x12\x0e\n\x06\x61mount\x18\x0f \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x10 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x11 \x01(\x01\x12\x11\n\tbuy_price\x18\x12 \x01(\x01\x12\x12\n\nbuy_volume\x18\x13 \x01(\x01\x12\x12\n\nsell_price\x18\x14 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x15 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x16 \x01(\x01\"n\n\x13HistoryTickResponse\x12\x11\n\tstock_num\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\x36\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32(.trade_agent_protobuf.HistoryTickMessage\"\xa0\x01\n\x12HistoryTickMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x63lose\x18\x02 \x01(\x01\x12\x0e\n\x06volume\x18\x03 \x01(\x03\x12\x11\n\tbid_price\x18\x04 \x01(\x01\x12\x12\n\nbid_volume\x18\x05 \x01(\x03\x12\x11\n\task_price\x18\x06 \x01(\x01\x12\x12\n\nask_volume\x18\x07 \x01(\x03\x12\x11\n\ttick_type\x18\x08 \x01(\x03\"x\n\x0cKbarResponse\x12\x11\n\tstock_num\x18\x01 \x01(\t\x12\x12\n\nstart_date\x18\x02 \x01(\t\x12\x10\n\x08\x65nd_date\x18\x03 \x01(\t\x12/\n\x04\x64\x61ta\x18\x04 \x03(\x0b\x32!.trade_agent_protobuf.KbarMessage\"a\n\x0bKbarMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x43lose\x18\x02 \x01(\x01\x12\x0c\n\x04Open\x18\x03 \x01(\x01\x12\x0c\n\x04High\x18\x04 \x01(\x01\x12\x0b\n\x03Low\x18\x05 \x01(\x01\x12\x0e\n\x06Volume\x18\x06 \x01(\x03\"I\n\x11LastCountResponse\x12\x34\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32&.trade_agent_protobuf.LastCountMessage\"K\n\x10LastCountMessage\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0c\n\x04time\x18\x03 \x01(\x03\x12\r\n\x05\x63lose\x18\x04 \x01(\x01\"h\n\x12VolumeRankResponse\x12\r\n\x05\x63ount\x18\x01 \x01(\x03\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\x35\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32\'.trade_agent_protobuf.VolumeRankMessage\"\x89\x04\n\x11VolumeRankMessage\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\n\n\x02ts\x18\x04 \x01(\x03\x12\x0c\n\x04open\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\r\n\x05\x63lose\x18\x08 \x01(\x01\x12\x13\n\x0bprice_range\x18\t \x01(\x01\x12\x11\n\ttick_type\x18\n \x01(\x03\x12\x14\n\x0c\x63hange_price\x18\x0b \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0c \x01(\x03\x12\x15\n\raverage_price\x18\r \x01(\x01\x12\x0e\n\x06volume\x18\x0e \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0f \x01(\x03\x12\x0e\n\x06\x61mount\x18\x10 \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x11 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x12 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x13 \x01(\x01\x12\x11\n\tbuy_price\x18\x14 \x01(\x01\x12\x12\n\nbuy_volume\x18\x15 \x01(\x03\x12\x12\n\nsell_price\x18\x16 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x17 \x01(\x03\x12\x12\n\nbid_orders\x18\x18 \x01(\x03\x12\x13\n\x0b\x62id_volumes\x18\x19 \x01(\x03\x12\x12\n\nask_orders\x18\x1a \x01(\x03\x12\x13\n\x0b\x61sk_volumes\x18\x1b \x01(\x03\"[\n\x1aOrderStatusHistoryResponse\x12=\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32/.trade_agent_protobuf.OrderStatusHistoryMessage\"\x90\x01\n\x19OrderStatusHistoryMessage\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x01\x12\x10\n\x08quantity\x18\x05 \x01(\x03\x12\x10\n\x08order_id\x18\x06 \x01(\t\x12\x12\n\norder_time\x18\x07 \x01(\t\"a\n\x14RealTimeTickResponse\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12\x37\n\x04tick\x18\x02 \x01(\x0b\x32).trade_agent_protobuf.RealTimeTickMessage\"\xa9\x03\n\x13RealTimeTickMessage\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x0c\n\x04open\x18\x03 \x01(\x01\x12\x11\n\tavg_price\x18\x04 \x01(\x01\x12\r\n\x05\x63lose\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\x0e\n\x06\x61mount\x18\x08 \x01(\x01\x12\x14\n\x0ctotal_amount\x18\t \x01(\x01\x12\x0e\n\x06volume\x18\n \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0b \x01(\x03\x12\x11\n\ttick_type\x18\x0c \x01(\x03\x12\x10\n\x08\x63hg_type\x18\r \x01(\x03\x12\x11\n\tprice_chg\x18\x0e \x01(\x01\x12\x0f\n\x07pct_chg\x18\x0f \x01(\x01\x12\x1a\n\x12\x62id_side_total_vol\x18\x10 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_vol\x18\x11 \x01(\x03\x12\x1a\n\x12\x62id_side_total_cnt\x18\x12 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_cnt\x18\x13 \x01(\x03\x12\x0f\n\x07suspend\x18\x14 \x01(\x03\x12\x10\n\x08simtrade\x18\x15 \x01(\x03\"h\n\x16RealTimeBidAskResponse\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12<\n\x07\x62id_ask\x18\x02 \x01(\x0b\x32+.trade_agent_protobuf.RealTimeBidAskMessage\"\xd5\x01\n\x15RealTimeBidAskMessage\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x11\n\tbid_price\x18\x03 \x03(\x01\x12\x12\n\nbid_volume\x18\x04 \x03(\x03\x12\x14\n\x0c\x64iff_bid_vol\x18\x05 \x03(\x03\x12\x11\n\task_price\x18\x06 \x03(\x01\x12\x12\n\nask_volume\x18\x07 \x03(\x03\x12\x14\n\x0c\x64iff_ask_vol\x18\x08 \x03(\x03\x12\x0f\n\x07suspend\x18\t \x01(\x03\x12\x10\n\x08simtrade\x18\n \x01(\x03\"S\n\rEventResponse\x12\x11\n\tresp_code\x18\x01 \x01(\x03\x12\x12\n\nevent_code\x18\x02 \x01(\x03\x12\x0c\n\x04info\x18\x03 \x01(\t\x12\r\n\x05\x65vent\x18\x04 \x01(\tB\x08Z\x06pkg/pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n*trade_agent_protobuf/src/trade_agent.proto\x12\x14trade_agent_protobuf\"N\n\x13StockDetailResponse\x12\x37\n\x05stock\x18\x01 \x03(\x0b\x32(.trade_agent_protobuf.StockDetailMessage\"\x8f\x01\n\x12StockDetailMessage\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x02 \x01(\t\x12\x0c\n\x04\x63ode\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\x12\x11\n\treference\x18\x05 \x01(\x01\x12\x13\n\x0bupdate_date\x18\x06 \x01(\t\x12\x11\n\tday_trade\x18\x07 \x01(\t\"G\n\x10SnapshotResponse\x12\x33\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32%.trade_agent_protobuf.SnapshotMessage\"\xab\x03\n\x0fSnapshotMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x10\n\x08\x65xchange\x18\x03 \x01(\t\x12\x0c\n\x04open\x18\x04 \x01(\x01\x12\x0c\n\x04high\x18\x05 \x01(\x01\x12\x0b\n\x03low\x18\x06 \x01(\x01\x12\r\n\x05\x63lose\x18\x07 \x01(\x01\x12\x11\n\ttick_type\x18\x08 \x01(\t\x12\x14\n\x0c\x63hange_price\x18\t \x01(\x01\x12\x13\n\x0b\x63hange_rate\x18\n \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0b \x01(\t\x12\x15\n\raverage_price\x18\x0c \x01(\x01\x12\x0e\n\x06volume\x18\r \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0e \x01(\x03\x12\x0e\n\x06\x61mount\x18\x0f \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x10 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x11 \x01(\x01\x12\x11\n\tbuy_price\x18\x12 \x01(\x01\x12\x12\n\nbuy_volume\x18\x13 \x01(\x01\x12\x12\n\nsell_price\x18\x14 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x15 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x16 \x01(\x01\"n\n\x13HistoryTickResponse\x12\x11\n\tstock_num\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\x36\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32(.trade_agent_protobuf.HistoryTickMessage\"\xa0\x01\n\x12HistoryTickMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x63lose\x18\x02 \x01(\x01\x12\x0e\n\x06volume\x18\x03 \x01(\x03\x12\x11\n\tbid_price\x18\x04 \x01(\x01\x12\x12\n\nbid_volume\x18\x05 \x01(\x03\x12\x11\n\task_price\x18\x06 \x01(\x01\x12\x12\n\nask_volume\x18\x07 \x01(\x03\x12\x11\n\ttick_type\x18\x08 \x01(\x03\"\x86\x01\n\x13HistoryKbarResponse\x12\x11\n\tstock_num\x18\x01 \x01(\t\x12\x12\n\nstart_date\x18\x02 \x01(\t\x12\x10\n\x08\x65nd_date\x18\x03 \x01(\t\x12\x36\n\x04\x64\x61ta\x18\x04 \x03(\x0b\x32(.trade_agent_protobuf.HistoryKbarMessage\"h\n\x12HistoryKbarMessage\x12\n\n\x02ts\x18\x01 \x01(\x03\x12\r\n\x05\x43lose\x18\x02 \x01(\x01\x12\x0c\n\x04Open\x18\x03 \x01(\x01\x12\x0c\n\x04High\x18\x04 \x01(\x01\x12\x0b\n\x03Low\x18\x05 \x01(\x01\x12\x0e\n\x06Volume\x18\x06 \x01(\x03\"O\n\x14HistoryCloseResponse\x12\x37\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32).trade_agent_protobuf.HistoryCloseMessage\"@\n\x13HistoryCloseMessage\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\r\n\x05\x63lose\x18\x03 \x01(\x01\"h\n\x12VolumeRankResponse\x12\r\n\x05\x63ount\x18\x01 \x01(\x03\x12\x0c\n\x04\x64\x61te\x18\x02 \x01(\t\x12\x35\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32\'.trade_agent_protobuf.VolumeRankMessage\"\x89\x04\n\x11VolumeRankMessage\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\n\n\x02ts\x18\x04 \x01(\x03\x12\x0c\n\x04open\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\r\n\x05\x63lose\x18\x08 \x01(\x01\x12\x13\n\x0bprice_range\x18\t \x01(\x01\x12\x11\n\ttick_type\x18\n \x01(\x03\x12\x14\n\x0c\x63hange_price\x18\x0b \x01(\x01\x12\x13\n\x0b\x63hange_type\x18\x0c \x01(\x03\x12\x15\n\raverage_price\x18\r \x01(\x01\x12\x0e\n\x06volume\x18\x0e \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0f \x01(\x03\x12\x0e\n\x06\x61mount\x18\x10 \x01(\x03\x12\x14\n\x0ctotal_amount\x18\x11 \x01(\x03\x12\x18\n\x10yesterday_volume\x18\x12 \x01(\x03\x12\x14\n\x0cvolume_ratio\x18\x13 \x01(\x01\x12\x11\n\tbuy_price\x18\x14 \x01(\x01\x12\x12\n\nbuy_volume\x18\x15 \x01(\x03\x12\x12\n\nsell_price\x18\x16 \x01(\x01\x12\x13\n\x0bsell_volume\x18\x17 \x01(\x03\x12\x12\n\nbid_orders\x18\x18 \x01(\x03\x12\x13\n\x0b\x62id_volumes\x18\x19 \x01(\x03\x12\x12\n\nask_orders\x18\x1a \x01(\x03\x12\x13\n\x0b\x61sk_volumes\x18\x1b \x01(\x03\"[\n\x1aOrderStatusHistoryResponse\x12=\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32/.trade_agent_protobuf.OrderStatusHistoryMessage\"\x90\x01\n\x19OrderStatusHistoryMessage\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0c\n\x04\x63ode\x18\x02 \x01(\t\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\x12\r\n\x05price\x18\x04 \x01(\x01\x12\x10\n\x08quantity\x18\x05 \x01(\x03\x12\x10\n\x08order_id\x18\x06 \x01(\t\x12\x12\n\norder_time\x18\x07 \x01(\t\"a\n\x14RealTimeTickResponse\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12\x37\n\x04tick\x18\x02 \x01(\x0b\x32).trade_agent_protobuf.RealTimeTickMessage\"\xa9\x03\n\x13RealTimeTickMessage\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x0c\n\x04open\x18\x03 \x01(\x01\x12\x11\n\tavg_price\x18\x04 \x01(\x01\x12\r\n\x05\x63lose\x18\x05 \x01(\x01\x12\x0c\n\x04high\x18\x06 \x01(\x01\x12\x0b\n\x03low\x18\x07 \x01(\x01\x12\x0e\n\x06\x61mount\x18\x08 \x01(\x01\x12\x14\n\x0ctotal_amount\x18\t \x01(\x01\x12\x0e\n\x06volume\x18\n \x01(\x03\x12\x14\n\x0ctotal_volume\x18\x0b \x01(\x03\x12\x11\n\ttick_type\x18\x0c \x01(\x03\x12\x10\n\x08\x63hg_type\x18\r \x01(\x03\x12\x11\n\tprice_chg\x18\x0e \x01(\x01\x12\x0f\n\x07pct_chg\x18\x0f \x01(\x01\x12\x1a\n\x12\x62id_side_total_vol\x18\x10 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_vol\x18\x11 \x01(\x03\x12\x1a\n\x12\x62id_side_total_cnt\x18\x12 \x01(\x03\x12\x1a\n\x12\x61sk_side_total_cnt\x18\x13 \x01(\x03\x12\x0f\n\x07suspend\x18\x14 \x01(\x03\x12\x10\n\x08simtrade\x18\x15 \x01(\x03\"h\n\x16RealTimeBidAskResponse\x12\x10\n\x08\x65xchange\x18\x01 \x01(\t\x12<\n\x07\x62id_ask\x18\x02 \x01(\x0b\x32+.trade_agent_protobuf.RealTimeBidAskMessage\"\xd5\x01\n\x15RealTimeBidAskMessage\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x11\n\tdate_time\x18\x02 \x01(\t\x12\x11\n\tbid_price\x18\x03 \x03(\x01\x12\x12\n\nbid_volume\x18\x04 \x03(\x03\x12\x14\n\x0c\x64iff_bid_vol\x18\x05 \x03(\x03\x12\x11\n\task_price\x18\x06 \x03(\x01\x12\x12\n\nask_volume\x18\x07 \x03(\x03\x12\x14\n\x0c\x64iff_ask_vol\x18\x08 \x03(\x03\x12\x0f\n\x07suspend\x18\t \x01(\x03\x12\x10\n\x08simtrade\x18\n \x01(\x03\"S\n\rEventResponse\x12\x11\n\tresp_code\x18\x01 \x01(\x03\x12\x12\n\nevent_code\x18\x02 \x01(\x03\x12\x0c\n\x04info\x18\x03 \x01(\t\x12\r\n\x05\x65vent\x18\x04 \x01(\tB\x08Z\x06pkg/pbb\x06proto3')
 
 
 
-_STOCKRESPONSE = DESCRIPTOR.message_types_by_name['StockResponse']
-_STOCKMESSAGE = DESCRIPTOR.message_types_by_name['StockMessage']
+_STOCKDETAILRESPONSE = DESCRIPTOR.message_types_by_name['StockDetailResponse']
+_STOCKDETAILMESSAGE = DESCRIPTOR.message_types_by_name['StockDetailMessage']
 _SNAPSHOTRESPONSE = DESCRIPTOR.message_types_by_name['SnapshotResponse']
 _SNAPSHOTMESSAGE = DESCRIPTOR.message_types_by_name['SnapshotMessage']
 _HISTORYTICKRESPONSE = DESCRIPTOR.message_types_by_name['HistoryTickResponse']
 _HISTORYTICKMESSAGE = DESCRIPTOR.message_types_by_name['HistoryTickMessage']
-_KBARRESPONSE = DESCRIPTOR.message_types_by_name['KbarResponse']
-_KBARMESSAGE = DESCRIPTOR.message_types_by_name['KbarMessage']
-_LASTCOUNTRESPONSE = DESCRIPTOR.message_types_by_name['LastCountResponse']
-_LASTCOUNTMESSAGE = DESCRIPTOR.message_types_by_name['LastCountMessage']
+_HISTORYKBARRESPONSE = DESCRIPTOR.message_types_by_name['HistoryKbarResponse']
+_HISTORYKBARMESSAGE = DESCRIPTOR.message_types_by_name['HistoryKbarMessage']
+_HISTORYCLOSERESPONSE = DESCRIPTOR.message_types_by_name['HistoryCloseResponse']
+_HISTORYCLOSEMESSAGE = DESCRIPTOR.message_types_by_name['HistoryCloseMessage']
 _VOLUMERANKRESPONSE = DESCRIPTOR.message_types_by_name['VolumeRankResponse']
 _VOLUMERANKMESSAGE = DESCRIPTOR.message_types_by_name['VolumeRankMessage']
 _ORDERSTATUSHISTORYRESPONSE = DESCRIPTOR.message_types_by_name['OrderStatusHistoryResponse']
@@ -37,19 +37,19 @@ _REALTIMETICKMESSAGE = DESCRIPTOR.message_types_by_name['RealTimeTickMessage']
 _REALTIMEBIDASKRESPONSE = DESCRIPTOR.message_types_by_name['RealTimeBidAskResponse']
 _REALTIMEBIDASKMESSAGE = DESCRIPTOR.message_types_by_name['RealTimeBidAskMessage']
 _EVENTRESPONSE = DESCRIPTOR.message_types_by_name['EventResponse']
-StockResponse = _reflection.GeneratedProtocolMessageType('StockResponse', (_message.Message,), {
-  'DESCRIPTOR' : _STOCKRESPONSE,
+StockDetailResponse = _reflection.GeneratedProtocolMessageType('StockDetailResponse', (_message.Message,), {
+  'DESCRIPTOR' : _STOCKDETAILRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.StockResponse)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.StockDetailResponse)
   })
-_sym_db.RegisterMessage(StockResponse)
+_sym_db.RegisterMessage(StockDetailResponse)
 
-StockMessage = _reflection.GeneratedProtocolMessageType('StockMessage', (_message.Message,), {
-  'DESCRIPTOR' : _STOCKMESSAGE,
+StockDetailMessage = _reflection.GeneratedProtocolMessageType('StockDetailMessage', (_message.Message,), {
+  'DESCRIPTOR' : _STOCKDETAILMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.StockMessage)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.StockDetailMessage)
   })
-_sym_db.RegisterMessage(StockMessage)
+_sym_db.RegisterMessage(StockDetailMessage)
 
 SnapshotResponse = _reflection.GeneratedProtocolMessageType('SnapshotResponse', (_message.Message,), {
   'DESCRIPTOR' : _SNAPSHOTRESPONSE,
@@ -79,33 +79,33 @@ HistoryTickMessage = _reflection.GeneratedProtocolMessageType('HistoryTickMessag
   })
 _sym_db.RegisterMessage(HistoryTickMessage)
 
-KbarResponse = _reflection.GeneratedProtocolMessageType('KbarResponse', (_message.Message,), {
-  'DESCRIPTOR' : _KBARRESPONSE,
+HistoryKbarResponse = _reflection.GeneratedProtocolMessageType('HistoryKbarResponse', (_message.Message,), {
+  'DESCRIPTOR' : _HISTORYKBARRESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.KbarResponse)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.HistoryKbarResponse)
   })
-_sym_db.RegisterMessage(KbarResponse)
+_sym_db.RegisterMessage(HistoryKbarResponse)
 
-KbarMessage = _reflection.GeneratedProtocolMessageType('KbarMessage', (_message.Message,), {
-  'DESCRIPTOR' : _KBARMESSAGE,
+HistoryKbarMessage = _reflection.GeneratedProtocolMessageType('HistoryKbarMessage', (_message.Message,), {
+  'DESCRIPTOR' : _HISTORYKBARMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.KbarMessage)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.HistoryKbarMessage)
   })
-_sym_db.RegisterMessage(KbarMessage)
+_sym_db.RegisterMessage(HistoryKbarMessage)
 
-LastCountResponse = _reflection.GeneratedProtocolMessageType('LastCountResponse', (_message.Message,), {
-  'DESCRIPTOR' : _LASTCOUNTRESPONSE,
+HistoryCloseResponse = _reflection.GeneratedProtocolMessageType('HistoryCloseResponse', (_message.Message,), {
+  'DESCRIPTOR' : _HISTORYCLOSERESPONSE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.LastCountResponse)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.HistoryCloseResponse)
   })
-_sym_db.RegisterMessage(LastCountResponse)
+_sym_db.RegisterMessage(HistoryCloseResponse)
 
-LastCountMessage = _reflection.GeneratedProtocolMessageType('LastCountMessage', (_message.Message,), {
-  'DESCRIPTOR' : _LASTCOUNTMESSAGE,
+HistoryCloseMessage = _reflection.GeneratedProtocolMessageType('HistoryCloseMessage', (_message.Message,), {
+  'DESCRIPTOR' : _HISTORYCLOSEMESSAGE,
   '__module__' : 'trade_agent_protobuf.src.trade_agent_pb2'
-  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.LastCountMessage)
+  # @@protoc_insertion_point(class_scope:trade_agent_protobuf.HistoryCloseMessage)
   })
-_sym_db.RegisterMessage(LastCountMessage)
+_sym_db.RegisterMessage(HistoryCloseMessage)
 
 VolumeRankResponse = _reflection.GeneratedProtocolMessageType('VolumeRankResponse', (_message.Message,), {
   'DESCRIPTOR' : _VOLUMERANKRESPONSE,
@@ -174,42 +174,42 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   DESCRIPTOR._serialized_options = b'Z\006pkg/pb'
-  _STOCKRESPONSE._serialized_start=68
-  _STOCKRESPONSE._serialized_end=134
-  _STOCKMESSAGE._serialized_start=137
-  _STOCKMESSAGE._serialized_end=274
-  _SNAPSHOTRESPONSE._serialized_start=276
-  _SNAPSHOTRESPONSE._serialized_end=347
-  _SNAPSHOTMESSAGE._serialized_start=350
-  _SNAPSHOTMESSAGE._serialized_end=777
-  _HISTORYTICKRESPONSE._serialized_start=779
-  _HISTORYTICKRESPONSE._serialized_end=889
-  _HISTORYTICKMESSAGE._serialized_start=892
-  _HISTORYTICKMESSAGE._serialized_end=1052
-  _KBARRESPONSE._serialized_start=1054
-  _KBARRESPONSE._serialized_end=1174
-  _KBARMESSAGE._serialized_start=1176
-  _KBARMESSAGE._serialized_end=1273
-  _LASTCOUNTRESPONSE._serialized_start=1275
-  _LASTCOUNTRESPONSE._serialized_end=1348
-  _LASTCOUNTMESSAGE._serialized_start=1350
-  _LASTCOUNTMESSAGE._serialized_end=1425
-  _VOLUMERANKRESPONSE._serialized_start=1427
-  _VOLUMERANKRESPONSE._serialized_end=1531
-  _VOLUMERANKMESSAGE._serialized_start=1534
-  _VOLUMERANKMESSAGE._serialized_end=2055
-  _ORDERSTATUSHISTORYRESPONSE._serialized_start=2057
-  _ORDERSTATUSHISTORYRESPONSE._serialized_end=2148
-  _ORDERSTATUSHISTORYMESSAGE._serialized_start=2151
-  _ORDERSTATUSHISTORYMESSAGE._serialized_end=2295
-  _REALTIMETICKRESPONSE._serialized_start=2297
-  _REALTIMETICKRESPONSE._serialized_end=2394
-  _REALTIMETICKMESSAGE._serialized_start=2397
-  _REALTIMETICKMESSAGE._serialized_end=2822
-  _REALTIMEBIDASKRESPONSE._serialized_start=2824
-  _REALTIMEBIDASKRESPONSE._serialized_end=2928
-  _REALTIMEBIDASKMESSAGE._serialized_start=2931
-  _REALTIMEBIDASKMESSAGE._serialized_end=3144
-  _EVENTRESPONSE._serialized_start=3146
-  _EVENTRESPONSE._serialized_end=3229
+  _STOCKDETAILRESPONSE._serialized_start=68
+  _STOCKDETAILRESPONSE._serialized_end=146
+  _STOCKDETAILMESSAGE._serialized_start=149
+  _STOCKDETAILMESSAGE._serialized_end=292
+  _SNAPSHOTRESPONSE._serialized_start=294
+  _SNAPSHOTRESPONSE._serialized_end=365
+  _SNAPSHOTMESSAGE._serialized_start=368
+  _SNAPSHOTMESSAGE._serialized_end=795
+  _HISTORYTICKRESPONSE._serialized_start=797
+  _HISTORYTICKRESPONSE._serialized_end=907
+  _HISTORYTICKMESSAGE._serialized_start=910
+  _HISTORYTICKMESSAGE._serialized_end=1070
+  _HISTORYKBARRESPONSE._serialized_start=1073
+  _HISTORYKBARRESPONSE._serialized_end=1207
+  _HISTORYKBARMESSAGE._serialized_start=1209
+  _HISTORYKBARMESSAGE._serialized_end=1313
+  _HISTORYCLOSERESPONSE._serialized_start=1315
+  _HISTORYCLOSERESPONSE._serialized_end=1394
+  _HISTORYCLOSEMESSAGE._serialized_start=1396
+  _HISTORYCLOSEMESSAGE._serialized_end=1460
+  _VOLUMERANKRESPONSE._serialized_start=1462
+  _VOLUMERANKRESPONSE._serialized_end=1566
+  _VOLUMERANKMESSAGE._serialized_start=1569
+  _VOLUMERANKMESSAGE._serialized_end=2090
+  _ORDERSTATUSHISTORYRESPONSE._serialized_start=2092
+  _ORDERSTATUSHISTORYRESPONSE._serialized_end=2183
+  _ORDERSTATUSHISTORYMESSAGE._serialized_start=2186
+  _ORDERSTATUSHISTORYMESSAGE._serialized_end=2330
+  _REALTIMETICKRESPONSE._serialized_start=2332
+  _REALTIMETICKRESPONSE._serialized_end=2429
+  _REALTIMETICKMESSAGE._serialized_start=2432
+  _REALTIMETICKMESSAGE._serialized_end=2857
+  _REALTIMEBIDASKRESPONSE._serialized_start=2859
+  _REALTIMEBIDASKRESPONSE._serialized_end=2963
+  _REALTIMEBIDASKMESSAGE._serialized_start=2966
+  _REALTIMEBIDASKMESSAGE._serialized_end=3179
+  _EVENTRESPONSE._serialized_start=3181
+  _EVENTRESPONSE._serialized_end=3264
 # @@protoc_insertion_point(module_scope)

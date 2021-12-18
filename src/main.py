@@ -92,14 +92,14 @@ def get_all_stock_detail():
           result:
             type: string
     '''
-    response = trade_agent_pb2.StockResponse()
+    response = trade_agent_pb2.StockDetailResponse()
     for row in ALL_STOCK_NUM_LIST:
         contract = token.Contracts.Stocks[row]
         if contract is None:
             ALL_STOCK_NUM_LIST.remove(row)
             logger.info('%s is no data', row)
             continue
-        res = trade_agent_pb2.StockMessage()
+        res = trade_agent_pb2.StockDetailMessage()
         res.exchange = contract.exchange
         res.category = contract.category
         res.code = contract.code
@@ -384,7 +384,7 @@ def get_kbar_by_stock_num_date_range():
           end_date:
             type: string
     '''
-    response = trade_agent_pb2.KbarResponse()
+    response = trade_agent_pb2.HistoryKbarResponse()
     body = request.get_json()
     kbar = token.kbars(
         contract=token.Contracts.Stocks[body['stock_num']],
@@ -405,7 +405,7 @@ def get_kbar_by_stock_num_date_range():
         if length - total_count != 0:
             return jsonify({'result': 'data broken'})
     for pos in range(total_count):
-        tmp = trade_agent_pb2.KbarMessage()
+        tmp = trade_agent_pb2.HistoryKbarMessage()
         tmp.ts = kbar.ts[pos]
         tmp.Close = kbar.Close[pos]
         tmp.Open = kbar.Open[pos]
@@ -450,7 +450,7 @@ def get_tse_kbar_by_stock_num_date_range():
           end_date:
             type: string
     '''
-    response = trade_agent_pb2.KbarResponse()
+    response = trade_agent_pb2.HistoryKbarResponse()
     body = request.get_json()
     kbar = token.kbars(
         contract=token.Contracts.Indexs.TSE.TSE001,
@@ -471,7 +471,7 @@ def get_tse_kbar_by_stock_num_date_range():
         if length - total_count != 0:
             return jsonify({'result': 'data broken'})
     for pos in range(total_count):
-        tmp = trade_agent_pb2.KbarMessage()
+        tmp = trade_agent_pb2.HistoryKbarMessage()
         tmp.ts = kbar.ts[pos]
         tmp.Close = kbar.Close[pos]
         tmp.Open = kbar.Open[pos]
@@ -486,7 +486,7 @@ def get_tse_kbar_by_stock_num_date_range():
     return jsonify({'result': 'fail'})
 
 
-@ api.route('/sinopac-mq-srv/history/lastcount', methods=['POST'])
+@ api.route('/sinopac-mq-srv/history/close', methods=['POST'])
 def get_lastcount_by_stock_arr_and_date():
     '''Get stock's last count and send to 'internal/lastcount'
     ---
@@ -525,7 +525,7 @@ def get_lastcount_by_stock_arr_and_date():
     date = request.headers['X-Date']
     body = request.get_json()
     stocks = body['stock_num_arr']
-    response = trade_agent_pb2.LastCountResponse()
+    response = trade_agent_pb2.HistoryCloseResponse()
     for stock in stocks:
         last_count = token.quote.ticks(
             contract=token.Contracts.Stocks[stock],
@@ -533,11 +533,10 @@ def get_lastcount_by_stock_arr_and_date():
             query_type=sj.constant.TicksQueryType.LastCount,
             last_cnt=1,
         )
-        tmp = trade_agent_pb2.LastCountMessage()
+        tmp = trade_agent_pb2.HistoryCloseMessage()
         tmp.date = date
         tmp.code = stock
-        tmp.time = last_count.ts
-        tmp.close = last_count.close
+        tmp.close = last_count.close[0]
         response.data.append(tmp)
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_lastcount,
@@ -546,7 +545,7 @@ def get_lastcount_by_stock_arr_and_date():
     return jsonify({'result': 'fail'})
 
 
-@ api.route('/sinopac-mq-srv/history/lastcount/tse', methods=['POST'])
+@ api.route('/sinopac-mq-srv/history/close/tse', methods=['POST'])
 def get_lastcount_tse_by_date():
     '''Get tse's last count and send to 'internal/lastcount_tse'
     ---
@@ -567,18 +566,17 @@ def get_lastcount_tse_by_date():
         description: Server Not Ready
     '''
     date = request.headers['X-Date']
-    response = trade_agent_pb2.LastCountResponse()
+    response = trade_agent_pb2.HistoryCloseResponse()
     last_count = token.quote.ticks(
         contract=token.Contracts.Indexs.TSE.TSE001,
         date=date,
         query_type=sj.constant.TicksQueryType.LastCount,
         last_cnt=1,
     )
-    tmp = trade_agent_pb2.LastCountMessage()
+    tmp = trade_agent_pb2.HistoryCloseMessage()
     tmp.date = date
     tmp.code = 'TSE001'
-    tmp.time = last_count.ts
-    tmp.close = last_count.close
+    tmp.close = last_count.close[0]
     response.data.append(tmp)
     if response.ByteSize != 0:
         mqtt_client.publish(topic=mq_topic.topic_lastcount_tse,
@@ -587,7 +585,7 @@ def get_lastcount_tse_by_date():
     return jsonify({'result': 'fail'})
 
 
-@ api.route('/sinopac-mq-srv/history/lastcount/multi-date', methods=['POST'])
+@ api.route('/sinopac-mq-srv/history/close/multi-date', methods=['POST'])
 def get_lastcount_by_stock_arr_and_date_arr():
     '''Get stock's last count in a date range and send to 'internal/lastcount_multi_date'
     ---
@@ -628,7 +626,7 @@ def get_lastcount_by_stock_arr_and_date_arr():
     body = request.get_json()
     stock_arr = body['stock_num_arr']
     date_arr = body['date_arr']
-    response = trade_agent_pb2.LastCountResponse()
+    response = trade_agent_pb2.HistoryCloseResponse()
     for stock in stock_arr:
         for date in date_arr:
             last_count = token.quote.ticks(
@@ -640,10 +638,9 @@ def get_lastcount_by_stock_arr_and_date_arr():
             tmp_close = 0
             if len(last_count.close) != 0:
                 tmp_close = last_count.close[0]
-            tmp = trade_agent_pb2.LastCountMessage()
+            tmp = trade_agent_pb2.HistoryCloseMessage()
             tmp.date = date
             tmp.code = stock
-            tmp.time = last_count.ts
             tmp.close = tmp_close
             response.data.append(tmp)
     if response.ByteSize != 0:
@@ -720,7 +717,7 @@ def get_volumerank_by_count_and_date():
     return jsonify({'result': 'fail'})
 
 
-@ api.route('/sinopac-mq-srv/subscribe/streamtick', methods=['POST'])
+@ api.route('/sinopac-mq-srv/subscribe/realtime-tick', methods=['POST'])
 def subscribe_stock_realtime_tick_by_stock_arr():
     '''Subscribe streamtick
     ---
@@ -755,7 +752,7 @@ def subscribe_stock_realtime_tick_by_stock_arr():
     return jsonify({'result': 'success'})
 
 
-@ api.route('/sinopac-mq-srv/unsubscribe/streamtick', methods=['POST'])
+@ api.route('/sinopac-mq-srv/unsubscribe/realtime-tick', methods=['POST'])
 def unsubscribe_stock_realtime_tick_by_stock_arr():
     '''UnSubscribe streamtick
     ---
@@ -790,7 +787,7 @@ def unsubscribe_stock_realtime_tick_by_stock_arr():
     return jsonify({'result': 'success'})
 
 
-@ api.route('/sinopac-mq-srv/unsubscribeall/streamtick', methods=['GET'])
+@ api.route('/sinopac-mq-srv/unsubscribeall/realtime-tick', methods=['GET'])
 def unsubscribe_all_stock_realtime_tick():
     '''Unubscribe all streamtick
     ---
