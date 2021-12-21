@@ -719,7 +719,7 @@ def get_volumerank_by_count_and_date():
 
 @ api.route('/sinopac-mq-srv/subscribe/realtime-tick', methods=['POST'])
 def subscribe_stock_realtime_tick_by_stock_arr():
-    '''Subscribe streamtick
+    '''Subscribe realtime tick
     ---
     tags:
       - SubscribeRealTimeTick
@@ -754,7 +754,7 @@ def subscribe_stock_realtime_tick_by_stock_arr():
 
 @ api.route('/sinopac-mq-srv/unsubscribe/realtime-tick', methods=['POST'])
 def unsubscribe_stock_realtime_tick_by_stock_arr():
-    '''UnSubscribe streamtick
+    '''UnSubscribe realtime tick
     ---
     tags:
       - SubscribeRealTimeTick
@@ -789,7 +789,7 @@ def unsubscribe_stock_realtime_tick_by_stock_arr():
 
 @ api.route('/sinopac-mq-srv/unsubscribeall/realtime-tick', methods=['GET'])
 def unsubscribe_all_stock_realtime_tick():
-    '''Unubscribe all streamtick
+    '''Unubscribe all realtime tick
     ---
     tags:
       - SubscribeRealTimeTick
