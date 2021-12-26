@@ -678,7 +678,7 @@ def get_volumerank_by_count_and_date():
         date=req_date,
     )
     response = trade_agent_pb2.VolumeRankResponse()
-    response.count = rank_count
+    response.count = int(rank_count)
     response.date = req_date
     for result in ranks:
         tmp = trade_agent_pb2.VolumeRankMessage()
@@ -1559,6 +1559,31 @@ def server_up_time():
         UP_TIME += 1
 
 
+def mqtt_on_lost(client: paho.Client, userdata: None, rc: int):
+    logger.info('MQTT Broker disconnected, unsubscribe all')
+    global QUOTE_SUB_LIST  # pylint: disable=global-statement
+    if len(QUOTE_SUB_LIST) != 0:
+        for stock in QUOTE_SUB_LIST:
+            logger.info('unsubscribe stock %s', stock)
+            token.quote.unsubscribe(
+                token.Contracts.Stocks[stock],
+                quote_type=sj.constant.QuoteType.Tick,
+                version=sj.constant.QuoteVersion.v1
+            )
+        QUOTE_SUB_LIST = []
+    global BIDASK_SUB_LIST  # pylint: disable=global-statement
+    if len(BIDASK_SUB_LIST) != 0:
+        for stock in BIDASK_SUB_LIST:
+            logger.info('unsubscribe bid-adk %s', stock)
+            token.quote.unsubscribe(
+                token.Contracts.Stocks[stock],
+                quote_type=sj.constant.QuoteType.BidAsk,
+                version=sj.constant.QuoteVersion.v1
+            )
+        BIDASK_SUB_LIST = []
+    logger.info('Client: %s, Userdate: %s, RC: %d', client, userdata, rc)
+
+
 def connect_mqtt_broker(mq_host: str, mq_port: int, user_name: str, passwd: str):
     '''Connect to MQTT Broker'''
     global mqtt_client  # pylint: disable=global-statement
@@ -1584,6 +1609,7 @@ def connect_mqtt_broker(mq_host: str, mq_port: int, user_name: str, passwd: str)
         keepalive=60,
     )
     new_client.loop_start()
+    new_client.on_disconnect = mqtt_on_lost
     mqtt_client = new_client
     return 0
 
