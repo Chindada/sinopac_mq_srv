@@ -54,7 +54,6 @@ docker-deploy:
       --restart always \
       -v /$SERVER_USER/sinopac_mq_srv_logs:/sinopac_mq_srv/logs \
       -e PYPORT=$PYPORT \
-      -e GOLANGPORT=$GOLANGPORT \
       -e TRADEID=$TRADEID \
       -e TRADEPASS=$TRADEPASS \
       -e CAPASS=$CAPASS \

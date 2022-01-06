@@ -12,7 +12,6 @@ import logging
 import sys
 import os
 import typing
-import requests
 import shioaji as sj
 import paho.mqtt.client as paho
 from flask import Flask,  request, jsonify
@@ -29,9 +28,9 @@ api = Flask(__name__)
 swagger = Swagger(api)
 
 token = sj.Shioaji()
-session = requests.Session()
 mutex = threading.Lock()
-mqtt_client = paho.Client()
+MQTT_CLIENT = paho.Client()
+MQTT_CONNECTING = False
 
 log_format = str()
 extension_name = str()
@@ -44,8 +43,7 @@ else:
     extension_name = '.log'
 
 console_handler = logging.StreamHandler()
-file_handler = logging.FileHandler(
-    './logs/'+datetime.now().strftime("%Y-%m-%dT%H%M")+extension_name)
+file_handler = logging.FileHandler('./logs/'+datetime.now().strftime("%Y-%m-%dT%H%M")+extension_name)
 
 console_handler.setFormatter(logging.Formatter(log_format))
 file_handler.setFormatter(logging.Formatter(log_format))
@@ -56,13 +54,10 @@ logger.addHandler(file_handler)
 logger.setLevel(logging.INFO)
 
 
-SERVER_STATUS = int()
+SINOPAC_LOGIN_STATUS = int()
 UP_TIME = int()
 ERROR_TIMES = int()
 
-TRADE_ID = sys.argv[3]
-TRADE_PASSWD = sys.argv[4]
-CA_PASSWD = sys.argv[5]
 
 HISTORY_ORDERS: typing.List[sj.order.Trade] = []
 ALL_STOCK_NUM_LIST: typing.List[str] = []
@@ -108,12 +103,11 @@ def get_all_stock_detail():
         res.update_date = contract.update_date
         res.day_trade = contract.day_trade
         response.stock.append(res)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_stock_detail,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_stock_detail, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -163,12 +157,11 @@ def get_all_snapshot():
         tmp.sell_volume = result.sell_volume
         tmp.volume_ratio = result.volume_ratio
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_all_snapshot,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_all_snapshot, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -217,12 +210,11 @@ def get_tse_snapshot():
         tmp.sell_volume = result.sell_volume
         tmp.volume_ratio = result.volume_ratio
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_tse_snapshot,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_tse_snapshot, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -288,12 +280,11 @@ def get_history_tick_by_stock_num_date():
         tmp.ask_volume = ticks.ask_volume[pos]
         tmp.tick_type = ticks.tick_type[pos]
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_history_tick,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_history_tick, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -357,12 +348,11 @@ def get_tse_history_tick_by_date():
         tmp.ask_volume = ticks.ask_volume[pos]
         tmp.tick_type = ticks.tick_type[pos]
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_tse_thistory_tick,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_tse_thistory_tick, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -428,12 +418,11 @@ def get_kbar_by_stock_num_date_range():
         tmp.Low = kbar.Low[pos]
         tmp.Volume = kbar.Volume[pos]
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_history_kbar,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_history_kbar, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -497,12 +486,11 @@ def get_tse_kbar_by_stock_num_date_range():
         tmp.Low = kbar.Low[pos]
         tmp.Volume = kbar.Volume[pos]
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_tse_history_kbar,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_tse_history_kbar, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -559,12 +547,11 @@ def get_lastcount_by_stock_arr_and_date():
         tmp.code = stock
         tmp.close = last_count.close[0]
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_lastcount,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_lastcount, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -602,12 +589,11 @@ def get_lastcount_tse_by_date():
     tmp.code = 'TSE001'
     tmp.close = last_count.close[0]
     response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_lastcount_tse,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_lastcount_tse, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -670,12 +656,11 @@ def get_lastcount_by_stock_arr_and_date_arr():
             tmp.code = stock
             tmp.close = tmp_close
             response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_lastcount_multi_date,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_lastcount_multi_date, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -740,12 +725,11 @@ def get_volumerank_by_count_and_date():
         tmp.ask_orders = result.ask_orders
         tmp.ask_volumes = result.ask_volumes
         response.data.append(tmp)
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_history_volumerank,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_history_volumerank, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -1255,14 +1239,12 @@ def get_order_status_from_local():
         tmp.price = order_price
         tmp.quantity = order.order.quantity
         tmp.order_id = order.order.id
-        tmp.order_time = datetime.strftime(
-            order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
-    if mqtt_client.is_connected() is False:
+        tmp.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_order_status_history,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status_history, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -1403,15 +1385,13 @@ def order_status_callback(reply: typing.List[sj.order.Trade]):
                 res.quantity = order.order.quantity
                 res.order_id = order.status.id
                 res.status = order.status.status
-                res.order_time = datetime.strftime(
-                    order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
+                res.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
                 response.data.append(res)
-            if mqtt_client.is_connected() is False:
+            if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
                 logger.warning(response)
                 return
             if response.ByteSize != 0:
-                mqtt_client.publish(topic=mq_topic.topic_order_status,
-                                    payload=response.SerializeToString(), qos=2, retain=False)
+                MQTT_CLIENT.publish(topic=mq_topic.topic_order_status, payload=response.SerializeToString(), qos=2, retain=False)
 
 
 def quote_callback_v1(exchange: sj.Exchange, tick: sj.TickSTKv1):
@@ -1419,8 +1399,7 @@ def quote_callback_v1(exchange: sj.Exchange, tick: sj.TickSTKv1):
     response = trade_agent_pb2.RealTimeTickResponse()
     response.exchange = exchange
     response.tick.code = tick.code
-    response.tick.date_time = datetime.strftime(
-        tick.datetime, '%Y-%m-%d %H:%M:%S.%f')
+    response.tick.date_time = datetime.strftime(tick.datetime, '%Y-%m-%d %H:%M:%S.%f')
     response.tick.open = tick.open
     response.tick.avg_price = tick.avg_price
     response.tick.close = tick.close
@@ -1440,12 +1419,11 @@ def quote_callback_v1(exchange: sj.Exchange, tick: sj.TickSTKv1):
     response.tick.ask_side_total_cnt = tick.ask_side_total_cnt
     response.tick.suspend = tick.suspend
     response.tick.simtrade = tick.simtrade
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_realtime_tick,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_realtime_tick, payload=response.SerializeToString(), qos=2, retain=False)
 
 
 def bid_ask_callback(exchange: sj.Exchange, bidask: sj.BidAskSTKv1):
@@ -1453,8 +1431,7 @@ def bid_ask_callback(exchange: sj.Exchange, bidask: sj.BidAskSTKv1):
     response = trade_agent_pb2.RealTimeBidAskResponse()
     response.exchange = exchange
     response.bid_ask.code = bidask.code
-    response.bid_ask.date_time = datetime.strftime(
-        bidask.datetime, '%Y-%m-%d %H:%M:%S.%f')
+    response.bid_ask.date_time = datetime.strftime(bidask.datetime, '%Y-%m-%d %H:%M:%S.%f')
     response.bid_ask.bid_price.extend(bidask.bid_price)
     response.bid_ask.bid_volume.extend(bidask.bid_volume)
     response.bid_ask.diff_bid_vol.extend(bidask.diff_bid_vol)
@@ -1463,12 +1440,11 @@ def bid_ask_callback(exchange: sj.Exchange, bidask: sj.BidAskSTKv1):
     response.bid_ask.diff_ask_vol.extend(bidask.diff_ask_vol)
     response.bid_ask.suspend = bidask.suspend
     response.bid_ask.simtrade = bidask.simtrade
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_realtime_bidask,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_realtime_bidask, payload=response.SerializeToString(), qos=2, retain=False)
 
 
 def event_callback(resp_code: int, event_code: int, info: str, event: str):
@@ -1478,12 +1454,11 @@ def event_callback(resp_code: int, event_code: int, info: str, event: str):
     response.event_code = event_code
     response.info = info
     response.event = event
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_trade_event,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_trade_event, payload=response.SerializeToString(), qos=2, retain=False)
 
 
 def send_token_expired_event():
@@ -1493,12 +1468,11 @@ def send_token_expired_event():
     response.event_code = 401
     response.info = 'Please resubscribe if there exits subscription'
     response.event = 'Token is expired.'
-    if mqtt_client.is_connected() is False:
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return
     if response.ByteSize != 0:
-        mqtt_client.publish(topic=mq_topic.topic_trade_event,
-                            payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_trade_event, payload=response.SerializeToString(), qos=2, retain=False)
 
 
 def fill_all_stock_local_list():
@@ -1509,8 +1483,7 @@ def fill_all_stock_local_list():
         for day_trade_stock in all_contract:
             if day_trade_stock.day_trade == 'Yes':
                 ALL_STOCK_NUM_LIST.append(day_trade_stock.code)
-    logger.info('Filling ALL_STOCK_NUM_LIST, total: %d',
-                len(ALL_STOCK_NUM_LIST))
+    logger.info('Filling ALL_STOCK_NUM_LIST, total: %d', len(ALL_STOCK_NUM_LIST))
 
 
 def run_pkill():
@@ -1570,27 +1543,26 @@ def place_order_callback(order_state: sj.constant.OrderState, order: dict):
 def login_callback(security_type: sj.constant.SecurityType):
     '''Login event callback'''
     with mutex:
-        global SERVER_STATUS  # pylint: disable=global-statement
+        global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
         if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
-            SERVER_STATUS += 1
-            logger.warning('login step: %d/4, %s',
-                           SERVER_STATUS, security_type)
+            SINOPAC_LOGIN_STATUS += 1
+            logger.warning('login step: %d/4, %s', SINOPAC_LOGIN_STATUS, security_type)
 
 
 def sinopac_login():
     '''Login into sinopac'''
     token.login(
-        person_id=TRADE_ID,
-        passwd=TRADE_PASSWD,
+        person_id=sys.argv[2],
+        passwd=sys.argv[3],
         contracts_cb=login_callback
     )
     while True:
-        if SERVER_STATUS == 4:
+        if SINOPAC_LOGIN_STATUS == 4:
             break
     token.activate_ca(
         ca_path='./data/ca_sinopac.pfx',
-        ca_passwd=CA_PASSWD,
-        person_id=TRADE_ID,
+        ca_passwd=sys.argv[4],
+        person_id=sys.argv[2],
     )
 
 
@@ -1637,14 +1609,12 @@ def mqtt_on_lost(client: paho.Client, userdata: None, rc: int):
 
 def connect_mqtt_broker(mq_host: str, mq_port: int, user_name: str, passwd: str):
     '''Connect to MQTT Broker'''
-    global mqtt_client  # pylint: disable=global-statement
-    if mqtt_client.is_connected() is True:
-        logger.warning('Disconnect original connection')
-        mqtt_client.loop_stop()
-        mqtt_client.disconnect()
+    global MQTT_CLIENT, MQTT_CONNECTING  # pylint: disable=global-statement
+    MQTT_CONNECTING = True
+    MQTT_CLIENT.loop_stop()
+    MQTT_CLIENT.disconnect()
     logger.info('New MQTT connection')
-    new_client = paho.Client(client_id="sinopac-srv-" +
-                             str(random.randrange(10000)))
+    new_client = paho.Client(client_id="sinopac-srv-" + str(random.randrange(10000)))
     new_client.tls_set(
         ca_certs="./configs/certs/ca_crt.pem",
         certfile="./configs/certs/client_crt.pem",
@@ -1661,7 +1631,8 @@ def connect_mqtt_broker(mq_host: str, mq_port: int, user_name: str, passwd: str)
     )
     new_client.loop_start()
     new_client.on_disconnect = mqtt_on_lost
-    mqtt_client = new_client
+    MQTT_CLIENT = new_client
+    MQTT_CONNECTING = False
     return 0
 
 
@@ -1671,5 +1642,5 @@ if __name__ == '__main__':
     set_sinopac_callback()
     sinopac_login()
     fill_all_stock_local_list()
-    logger.info('Server token: %s', server_token)
+    logger.info('Server Token: %s', server_token)
     serve(api, host='0.0.0.0', port=sys.argv[1])
