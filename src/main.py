@@ -1319,7 +1319,7 @@ def get_mq_conf_to_connect():
     mq_host = body['host']
     mq_port = body['port']
     mq_user_name = body['user']
-    mq_password = body['password']
+    mq_password = body['passwd']
     status = connect_mqtt_broker(
         mq_host,
         int(mq_port),
