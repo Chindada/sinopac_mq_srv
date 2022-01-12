@@ -1228,6 +1228,8 @@ def get_order_status_from_local():
         return jsonify({'result': 'history not found'})
     for order in HISTORY_ORDERS:
         order_price = int()
+        if order.status.status == sj.constant.Status.Cancelled:
+            order.status.status = 'Canceled'
         if order.status.modified_price != 0:
             order_price = order.status.modified_price
         else:
@@ -1240,6 +1242,7 @@ def get_order_status_from_local():
         tmp.quantity = order.order.quantity
         tmp.order_id = order.order.id
         tmp.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
+        response.data.append(tmp)
     if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
@@ -1247,6 +1250,46 @@ def get_order_status_from_local():
         MQTT_CLIENT.publish(topic=mq_topic.topic_order_status_history, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
+
+
+@ api.route('/sinopac-mq-srv/trade/order/status', methods=['GET'])
+def get_order_status_from_local_by_order_id():
+    '''Fetch Order Status by order id
+    ---
+    tags:
+      - TradeStatus
+    parameters:
+      - in: body
+        name: order id
+        description: Cancel Order ID
+        required: true
+        schema:
+          $ref: '#/definitions/OrderID'
+    responses:
+      200:
+        description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
+      500:
+        description: Server Not Ready
+    '''
+    mutex_update_status(-1)
+    body = request.get_json()
+    if len(HISTORY_ORDERS) == 0:
+        return jsonify({'result': 'history not found'})
+    for order in HISTORY_ORDERS:
+        if order.order.id == body['order_id']:
+            if order.status.status == sj.constant.Status.Cancelled:
+                order.status.status = 'Canceled'
+            return jsonify({
+                'status': order.status.status,
+                'order_id': order.order.id,
+            })
+    return jsonify({
+        'status': 'fail',
+        'order_id': '',
+    })
 
 
 @ api.route('/sinopac-mq-srv/system/healthcheck', methods=['GET'])
