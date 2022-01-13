@@ -957,6 +957,10 @@ def buy_stock():
     tags:
       - Trade
     parameters:
+      - in: header
+        name: X-Simulate
+        description: 0 = normal, 1 = simulate
+        required: true
       - in: body
         name: order
         description: Buy order
@@ -989,6 +993,7 @@ def buy_stock():
           order_id:
             type: string
     '''
+    sim = request.headers['X-Simulate']
     body = request.get_json()
     contract = token.Contracts.Stocks[body['stock']]
     order = token.Order(
@@ -1000,13 +1005,32 @@ def buy_stock():
         order_lot=sj.constant.TFTStockOrderLot.Common,
         account=token.stock_account
     )
-    trade = token.place_order(contract, order)
-    if trade is not None and trade.order.id != '':
-        if trade.status.status == sj.constant.Status.Cancelled:
-            trade.status.status = 'Canceled'
+    if int(sim) == 0:
+        trade = token.place_order(contract, order)
+        if trade is not None and trade.order.id != '':
+            if trade.status.status == sj.constant.Status.Cancelled:
+                trade.status.status = 'Canceled'
+            return jsonify({
+                'status': trade.status.status,
+                'order_id': trade.order.id,
+            })
+    else:
+        order_status = sj.order.OrderStatus(
+            id=''.join(random.choice(string.ascii_letters) for _ in range(8)),
+            status=sj.constant.Status.Submitted,
+            status_code='',
+            order_datetime=datetime.now(),
+            deals=[],
+        )
+        sim_order = sj.order.Trade(
+            contract=contract,
+            order=order,
+            status=order_status,
+        )
+        threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
         return jsonify({
-            'status': trade.status.status,
-            'order_id': trade.order.id,
+            'status': sim_order.status.status,
+            'order_id': sim_order.status.id,
         })
     return jsonify({
         'status': 'fail',
@@ -1021,6 +1045,10 @@ def sell_stock():
     tags:
       - Trade
     parameters:
+      - in: header
+        name: X-Simulate
+        description: 0 = normal, 1 = simulate
+        required: true
       - in: body
         name: order
         description: Sell order
@@ -1046,6 +1074,7 @@ def sell_stock():
           quantity:
             type: integer
     '''
+    sim = request.headers['X-Simulate']
     body = request.get_json()
     contract = token.Contracts.Stocks[body['stock']]
     order = token.Order(
@@ -1057,13 +1086,32 @@ def sell_stock():
         order_lot=sj.constant.TFTStockOrderLot.Common,
         account=token.stock_account
     )
-    trade = token.place_order(contract, order)
-    if trade is not None and trade.order.id != '':
-        if trade.status.status == sj.constant.Status.Cancelled:
-            trade.status.status = 'Canceled'
+    if int(sim) == 0:
+        trade = token.place_order(contract, order)
+        if trade is not None and trade.order.id != '':
+            if trade.status.status == sj.constant.Status.Cancelled:
+                trade.status.status = 'Canceled'
+            return jsonify({
+                'status': trade.status.status,
+                'order_id': trade.order.id,
+            })
+    else:
+        order_status = sj.order.OrderStatus(
+            id=''.join(random.choice(string.ascii_letters) for _ in range(8)),
+            status=sj.constant.Status.Submitted,
+            status_code='',
+            order_datetime=datetime.now(),
+            deals=[],
+        )
+        sim_order = sj.order.Trade(
+            contract=contract,
+            order=order,
+            status=order_status,
+        )
+        threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
         return jsonify({
-            'status': trade.status.status,
-            'order_id': trade.order.id,
+            'status': sim_order.status.status,
+            'order_id': sim_order.status.id,
         })
     return jsonify({
         'status': 'fail',
@@ -1078,6 +1126,10 @@ def sell_first_stock():
     tags:
       - Trade
     parameters:
+      - in: header
+        name: X-Simulate
+        description: 0 = normal, 1 = simulate
+        required: true
       - in: body
         name: order
         description: Sell stock first
@@ -1103,6 +1155,7 @@ def sell_first_stock():
           quantity:
             type: integer
     '''
+    sim = request.headers['X-Simulate']
     body = request.get_json()
     contract = token.Contracts.Stocks[body['stock']]
     order = token.Order(
@@ -1115,18 +1168,72 @@ def sell_first_stock():
         first_sell=sj.constant.StockFirstSell.Yes,
         account=token.stock_account
     )
-    trade = token.place_order(contract, order)
-    if trade is not None and trade.order.id != '':
-        if trade.status.status == sj.constant.Status.Cancelled:
-            trade.status.status = 'Canceled'
+    if int(sim) == 0:
+        trade = token.place_order(contract, order)
+        if trade is not None and trade.order.id != '':
+            if trade.status.status == sj.constant.Status.Cancelled:
+                trade.status.status = 'Canceled'
+            return jsonify({
+                'status': trade.status.status,
+                'order_id': trade.order.id,
+            })
+    else:
+        order_status = sj.order.OrderStatus(
+            id=''.join(random.choice(string.ascii_letters) for _ in range(8)),
+            status=sj.constant.Status.Submitted,
+            status_code='',
+            order_datetime=datetime.now(),
+            deals=[],
+        )
+        sim_order = sj.order.Trade(
+            contract=contract,
+            order=order,
+            status=order_status,
+        )
+        threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
         return jsonify({
-            'status': trade.status.status,
-            'order_id': trade.order.id,
+            'status': sim_order.status.status,
+            'order_id': sim_order.status.id,
         })
     return jsonify({
         'status': 'fail',
         'order_id': '',
     })
+
+
+def finish_simulation_order(order: sj.order.Trade, wait: int):
+    response = trade_agent_pb2.OrderStatusHistoryResponse()
+    res = trade_agent_pb2.OrderStatusHistoryMessage()
+    res.code = order.contract.code
+    res.action = order.order.action
+    res.price = order.order.price
+    res.quantity = order.order.quantity
+    res.order_id = order.status.id
+    res.status = order.status.status
+    res.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
+    response.data.append(res)
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
+        logger.warning(response)
+        return
+    if response.ByteSize != 0:
+        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status, payload=response.SerializeToString(), qos=2, retain=False)
+    time.sleep(wait)
+    order.status.status = sj.constant.Status.Filled
+    response = trade_agent_pb2.OrderStatusHistoryResponse()
+    res = trade_agent_pb2.OrderStatusHistoryMessage()
+    res.code = order.contract.code
+    res.action = order.order.action
+    res.price = order.order.price
+    res.quantity = order.order.quantity
+    res.order_id = order.status.id
+    res.status = order.status.status
+    res.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
+    response.data.append(res)
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
+        logger.warning(response)
+        return
+    if response.ByteSize != 0:
+        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status, payload=response.SerializeToString(), qos=2, retain=False)
 
 
 @ api.route('/sinopac-mq-srv/trade/cancel', methods=['POST'])
@@ -1277,7 +1384,10 @@ def get_order_status_from_local_by_order_id():
     mutex_update_status(-1)
     body = request.get_json()
     if len(HISTORY_ORDERS) == 0:
-        return jsonify({'result': 'history not found'})
+        return jsonify({
+            'status': 'fail',
+            'order_id': '',
+        })
     for order in HISTORY_ORDERS:
         if order.order.id == body['order_id']:
             if order.status.status == sj.constant.Status.Cancelled:
