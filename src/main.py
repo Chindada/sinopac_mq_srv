@@ -1016,7 +1016,7 @@ def buy_stock():
             })
     else:
         order_status = sj.order.OrderStatus(
-            id=''.join(random.choice(string.ascii_letters) for _ in range(8)),
+            id=''.join(random.choice(string.ascii_lowercase+string.octdigits) for _ in range(8)),
             status=sj.constant.Status.Submitted,
             status_code='',
             order_datetime=datetime.now(),
@@ -1097,7 +1097,7 @@ def sell_stock():
             })
     else:
         order_status = sj.order.OrderStatus(
-            id=''.join(random.choice(string.ascii_letters) for _ in range(8)),
+            id=''.join(random.choice(string.ascii_lowercase+string.octdigits) for _ in range(8)),
             status=sj.constant.Status.Submitted,
             status_code='',
             order_datetime=datetime.now(),
@@ -1179,7 +1179,7 @@ def sell_first_stock():
             })
     else:
         order_status = sj.order.OrderStatus(
-            id=''.join(random.choice(string.ascii_letters) for _ in range(8)),
+            id=''.join(random.choice(string.ascii_lowercase+string.octdigits) for _ in range(8)),
             status=sj.constant.Status.Submitted,
             status_code='',
             order_datetime=datetime.now(),
