@@ -1202,6 +1202,7 @@ def sell_first_stock():
 
 
 def finish_simulation_order(order: sj.order.Trade, wait: int):
+    time.sleep(wait/2)
     response = trade_agent_pb2.OrderStatusHistoryResponse()
     res = trade_agent_pb2.OrderStatusHistoryMessage()
     res.code = order.contract.code
