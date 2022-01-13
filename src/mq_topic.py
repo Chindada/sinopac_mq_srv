@@ -16,8 +16,6 @@ topic_history_volumerank = 'internal/volumerank'
 
 topic_order_status = 'internal/order_status'
 
-topic_order_status_history = 'internal/order_status_history'
-
 topic_realtime_tick = 'internal/realtime_tick'
 
 topic_realtime_bidask = 'internal/realtime_bidask'

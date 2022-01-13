@@ -1201,42 +1201,6 @@ def sell_first_stock():
     })
 
 
-def finish_simulation_order(order: sj.order.Trade, wait: int):
-    time.sleep(wait/2)
-    response = trade_agent_pb2.OrderStatusHistoryResponse()
-    res = trade_agent_pb2.OrderStatusHistoryMessage()
-    res.code = order.contract.code
-    res.action = order.order.action
-    res.price = order.order.price
-    res.quantity = order.order.quantity
-    res.order_id = order.status.id
-    res.status = order.status.status
-    res.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
-    response.data.append(res)
-    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
-        logger.warning(response)
-        return
-    if response.ByteSize != 0:
-        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status, payload=response.SerializeToString(), qos=2, retain=False)
-    time.sleep(wait)
-    order.status.status = sj.constant.Status.Filled
-    response = trade_agent_pb2.OrderStatusHistoryResponse()
-    res = trade_agent_pb2.OrderStatusHistoryMessage()
-    res.code = order.contract.code
-    res.action = order.order.action
-    res.price = order.order.price
-    res.quantity = order.order.quantity
-    res.order_id = order.status.id
-    res.status = order.status.status
-    res.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
-    response.data.append(res)
-    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
-        logger.warning(response)
-        return
-    if response.ByteSize != 0:
-        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status, payload=response.SerializeToString(), qos=2, retain=False)
-
-
 @ api.route('/sinopac-mq-srv/trade/cancel', methods=['POST'])
 def cancel_stock():
     '''Cancel order
@@ -1244,6 +1208,10 @@ def cancel_stock():
     tags:
       - Trade
     parameters:
+      - in: header
+        name: X-Simulate
+        description: 0 = normal, 1 = simulate
+        required: true
       - in: body
         name: order id
         description: Cancel Order ID
@@ -1265,32 +1233,44 @@ def cancel_stock():
           order_id:
             type: string
     '''
-    cancel_order = None
-    body = request.get_json()
-    times = int()
-    while True:
-        mutex_update_status(-1)
-        for order in HISTORY_ORDERS:
-            if order.status.id == body['order_id']:
-                cancel_order = order
-        if cancel_order is not None or times >= 10:
-            break
-        times += 1
-    if cancel_order is None:
-        return jsonify({'result': 'cancel order not found'})
-    if cancel_order.status.status == sj.constant.Status.Cancelled:
-        return jsonify({'result': 'order already be canceled'})
-    token.cancel_order(cancel_order)
-    times = 0
-    while True:
-        if times >= 10:
-            break
-        mutex_update_status(-1)
-        for order in HISTORY_ORDERS:
-            if order.status.id == body['order_id'] and order.status.status == sj.constant.Status.Cancelled:
-                return jsonify({'result': 'success'})
-        times += 1
+    sim = request.headers['X-Simulate']
+    if int(sim) == 0:
+        cancel_order = None
+        body = request.get_json()
+        times = int()
+        while True:
+            mutex_update_status(-1)
+            for order in HISTORY_ORDERS:
+                if order.status.id == body['order_id']:
+                    cancel_order = order
+            if cancel_order is not None or times >= 10:
+                break
+            times += 1
+        if cancel_order is None:
+            return jsonify({'result': 'cancel order not found'})
+        if cancel_order.status.status == sj.constant.Status.Cancelled:
+            return jsonify({'result': 'order already be canceled'})
+        token.cancel_order(cancel_order)
+        times = 0
+        while True:
+            if times >= 10:
+                break
+            mutex_update_status(-1)
+            for order in HISTORY_ORDERS:
+                if order.status.id == body['order_id'] and order.status.status == sj.constant.Status.Cancelled:
+                    return jsonify({'result': 'success'})
+            times += 1
+    else:
+        return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
+
+
+def finish_simulation_order(order: sj.order.Trade, wait: int):
+    HISTORY_ORDERS.append(order)
+    time.sleep(wait)
+    for sim in HISTORY_ORDERS:
+        if sim.status.id == order.status.id:
+            sim.status.status = sj.constant.Status.Filled
 
 
 @ api.route('/sinopac-mq-srv/trade/status', methods=['GET'])
@@ -1299,6 +1279,11 @@ def get_order_status():
     ---
     tags:
       - TradeStatus
+    parameters:
+      - in: header
+        name: X-Simulate
+        description: 0 = normal, 1 = simulate
+        required: true
     responses:
       200:
         description: Success Response
@@ -1308,32 +1293,16 @@ def get_order_status():
       500:
         description: Server Not Ready
     '''
-    try:
-        mutex_update_status(0)
-    except sj.error.TokenError:
-        send_token_expired_event()
-    return jsonify({'result': 'success'})
-
-
-@ api.route('/sinopac-mq-srv/trade/status-history', methods=['GET'])
-def get_order_status_from_local():
-    '''Fetch Order history and send to 'internal/order_status_history'
-    ---
-    tags:
-      - TradeStatus
-    responses:
-      200:
-        description: Success Response
-        name: result
-        schema:
-          $ref: '#/definitions/Result'
-      500:
-        description: Server Not Ready
-    '''
+    sim = request.headers['X-Simulate']
+    if int(sim) == 0:
+        try:
+            mutex_update_status(0)
+        except sj.error.TokenError:
+            send_token_expired_event()
+        return jsonify({'result': 'success'})
     response = trade_agent_pb2.OrderStatusHistoryResponse()
-    mutex_update_status(-1)
     if len(HISTORY_ORDERS) == 0:
-        return jsonify({'result': 'history not found'})
+        return jsonify({'result': 'success'})
     for order in HISTORY_ORDERS:
         order_price = int()
         if order.status.status == sj.constant.Status.Cancelled:
@@ -1343,19 +1312,19 @@ def get_order_status_from_local():
         else:
             order_price = order.order.price
         tmp = trade_agent_pb2.OrderStatusHistoryMessage()
-        tmp.status = order.status.status
         tmp.code = order.contract.code
         tmp.action = order.order.action
         tmp.price = order_price
         tmp.quantity = order.order.quantity
-        tmp.order_id = order.order.id
+        tmp.order_id = order.status.id
+        tmp.status = order.status.status
         tmp.order_time = datetime.strftime(order.status.order_datetime, '%Y-%m-%d %H:%M:%S')
         response.data.append(tmp)
     if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
     if response.ByteSize != 0:
-        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status_history, payload=response.SerializeToString(), qos=2, retain=False)
+        MQTT_CLIENT.publish(topic=mq_topic.topic_order_status, payload=response.SerializeToString(), qos=2, retain=False)
         return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
 
@@ -1367,6 +1336,10 @@ def get_order_status_from_local_by_order_id():
     tags:
       - TradeStatus
     parameters:
+      - in: header
+        name: X-Simulate
+        description: 0 = normal, 1 = simulate
+        required: true
       - in: body
         name: order id
         description: Cancel Order ID
@@ -1382,7 +1355,9 @@ def get_order_status_from_local_by_order_id():
       500:
         description: Server Not Ready
     '''
-    mutex_update_status(-1)
+    sim = request.headers['X-Simulate']
+    if int(sim) == 0:
+        mutex_update_status(-1)
     body = request.get_json()
     if len(HISTORY_ORDERS) == 0:
         return jsonify({
