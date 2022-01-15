@@ -1037,12 +1037,13 @@ def buy_stock():
             status=order_status,
         )
         with simulation_count_lock:
-            if CURRENT_STOCK_COUNT[body['stock']] < 0 and body['quantity']+CURRENT_STOCK_COUNT[body['stock']] > 0:
-                return jsonify({
-                    'status': 'fail',
-                    'order_id': '',
-                })
-        threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
+            if CURRENT_STOCK_COUNT[body['stock']] < 0:
+                if body['quantity']+CURRENT_STOCK_COUNT[body['stock']] > 0:
+                    return jsonify({
+                        'status': 'fail',
+                        'order_id': '',
+                    })
+        threading.Thread(target=finish_simulation_order, args=(sim_order, random.randrange(15)+1)).start()
         return jsonify({
             'status': sim_order.status.status,
             'order_id': sim_order.status.id,
@@ -1129,7 +1130,7 @@ def sell_stock():
                     'status': 'fail',
                     'order_id': '',
                 })
-        threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
+        threading.Thread(target=finish_simulation_order, args=(sim_order, random.randrange(15)+1)).start()
         return jsonify({
             'status': sim_order.status.status,
             'order_id': sim_order.status.id,
@@ -1217,7 +1218,7 @@ def sell_first_stock():
                     'status': 'fail',
                     'order_id': '',
                 })
-        threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
+        threading.Thread(target=finish_simulation_order, args=(sim_order, random.randrange(15)+1)).start()
         return jsonify({
             'status': sim_order.status.status,
             'order_id': sim_order.status.id,
