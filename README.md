@@ -24,6 +24,24 @@ mypy --install-types --non-interactive ./src/main.py
 ```sh
 pip freeze > requirements.txt
 pip uninstall -y -r requirements.txt
+
+rm -rf /utils
+mkdir /utils
+cd /utils
+curl -fSL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.3/protoc-3.19.3-linux-x86_64.zip --output protobuf.zip
+unzip protobuf.zip -d protobuf
+cd /sinopac_mq_srv
+
+pip install \
+    --no-warn-script-location \
+    --no-cache-dir \
+    requests shioaji Flask flasgger waitress \
+    autopep8 protobuf mypy types-protobuf mypy-protobuf \
+    pylint pylint-protobuf simplejson paho-mqtt
+
+mypy --install-types --non-interactive ./src/main.py
+
+pip freeze > requirements.txt
 ```
 
 ### Git
@@ -31,20 +49,6 @@ pip uninstall -y -r requirements.txt
 ```sh
 git fetch --prune --prune-tags origin
 git check-ignore *
-```
-
-### Update dependency
-
-```sh
-pip install \
-    --no-warn-script-location \
-    --no-cache-dir \
-    requests shioaji Flask flasgger waitress \
-    autopep8 protobuf mypy types-protobuf mypy-protobuf \
-    pylint pylint-protobuf simplejson paho-mqtt && \
-mypy --install-types --non-interactive ./src/main.py
-pip freeze > requirements.txt
-
 ```
 
 ## Authors

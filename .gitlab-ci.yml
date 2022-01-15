@@ -17,7 +17,7 @@ py-lint:
   stage: test
   before_script:
     - pip install --no-warn-script-location --no-cache-dir -r requirements.txt
-    - mypy --install-types --non-interactive ./src/main.py
+    - mypy --install-types --non-interactive ./src/main.py ./src/mq_topic.py
   script:
     - pylint ./src/main.py ./src/mq_topic.py
     - mypy --config-file=./mypy.ini ./src/main.py ./src/mq_topic.py
