@@ -29,6 +29,7 @@ swagger = Swagger(api)
 
 token = sj.Shioaji()
 mutex = threading.Lock()
+simulation_count_lock = threading.Lock()
 MQTT_CLIENT = paho.Client()
 MQTT_CONNECTING = False
 
@@ -60,6 +61,7 @@ ERROR_TIMES = int()
 
 
 HISTORY_ORDERS: typing.List[sj.order.Trade] = []
+CURRENT_STOCK_COUNT: typing.Dict[str, int] = {}
 ALL_STOCK_NUM_LIST: typing.List[str] = []
 BIDASK_SUB_LIST: typing.List[str] = []
 QUOTE_SUB_LIST: typing.List[str] = []
@@ -676,6 +678,10 @@ def get_volumerank_by_count_and_date():
         name: X-Count
         description: Count
         required: true
+      - in: header
+        name: X-Date
+        description: Date
+        required: true
     responses:
       200:
         description: Success Response
@@ -760,7 +766,8 @@ def subscribe_stock_realtime_tick_by_stock_arr():
     stocks = body['stock_num_arr']
     for stock in stocks:
         QUOTE_SUB_LIST.append(stock)
-        logger.info('subscribe stock %s', stock)
+        CURRENT_STOCK_COUNT[stock] = 0
+        logger.info('subscribe stock realtime tick %s', stock)
         token.quote.subscribe(
             token.Contracts.Stocks[stock],
             quote_type=sj.constant.QuoteType.Tick,
@@ -795,7 +802,8 @@ def unsubscribe_stock_realtime_tick_by_stock_arr():
     stocks = body['stock_num_arr']
     for stock in stocks:
         QUOTE_SUB_LIST.remove(stock)
-        logger.info('unsubscribe stock %s', stock)
+        del CURRENT_STOCK_COUNT[stock]
+        logger.info('unsubscribe stock realtime tick %s', stock)
         token.quote.unsubscribe(
             token.Contracts.Stocks[stock],
             quote_type=sj.constant.QuoteType.Tick,
@@ -822,13 +830,14 @@ def unsubscribe_all_stock_realtime_tick():
     global QUOTE_SUB_LIST  # pylint: disable=global-statement
     if len(QUOTE_SUB_LIST) != 0:
         for stock in QUOTE_SUB_LIST:
-            logger.info('unsubscribe stock %s', stock)
+            logger.info('unsubscribe stock realtime tick %s', stock)
             token.quote.unsubscribe(
                 token.Contracts.Stocks[stock],
                 quote_type=sj.constant.QuoteType.Tick,
                 version=sj.constant.QuoteVersion.v1
             )
         QUOTE_SUB_LIST = []
+        CURRENT_STOCK_COUNT.clear()
     return jsonify({'result': 'success'})
 
 
@@ -868,7 +877,7 @@ def subscribe_stock_realtime_bidask_by_stock_arr():
     stocks = body['stock_num_arr']
     for stock in stocks:
         BIDASK_SUB_LIST.append(stock)
-        logger.info('subscribe bid-adk %s', stock)
+        logger.info('subscribe stock bid-adk %s', stock)
         token.quote.subscribe(
             token.Contracts.Stocks[stock],
             quote_type=sj.constant.QuoteType.BidAsk,
@@ -913,7 +922,7 @@ def unsubscribe_stock_realtime_bidask_by_stock_arr():
     stocks = body['stock_num_arr']
     for stock in stocks:
         BIDASK_SUB_LIST.remove(stock)
-        logger.info('unsubscribe bid-adk %s', stock)
+        logger.info('unsubscribe stock bid-adk %s', stock)
         token.quote.unsubscribe(
             token.Contracts.Stocks[stock],
             quote_type=sj.constant.QuoteType.BidAsk,
@@ -940,7 +949,7 @@ def unsubscribe_all_stock_realtime_bidask():
     global BIDASK_SUB_LIST  # pylint: disable=global-statement
     if len(BIDASK_SUB_LIST) != 0:
         for stock in BIDASK_SUB_LIST:
-            logger.info('unsubscribe bid-adk %s', stock)
+            logger.info('unsubscribe stock bid-adk %s', stock)
             token.quote.unsubscribe(
                 token.Contracts.Stocks[stock],
                 quote_type=sj.constant.QuoteType.BidAsk,
@@ -1027,6 +1036,12 @@ def buy_stock():
             order=order,
             status=order_status,
         )
+        with simulation_count_lock:
+            if CURRENT_STOCK_COUNT[body['stock']] < 0 and body['quantity']+CURRENT_STOCK_COUNT[body['stock']] > 0:
+                return jsonify({
+                    'status': 'fail',
+                    'order_id': '',
+                })
         threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
         return jsonify({
             'status': sim_order.status.status,
@@ -1108,6 +1123,12 @@ def sell_stock():
             order=order,
             status=order_status,
         )
+        with simulation_count_lock:
+            if body['quantity'] > CURRENT_STOCK_COUNT[body['stock']]:
+                return jsonify({
+                    'status': 'fail',
+                    'order_id': '',
+                })
         threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
         return jsonify({
             'status': sim_order.status.status,
@@ -1190,6 +1211,12 @@ def sell_first_stock():
             order=order,
             status=order_status,
         )
+        with simulation_count_lock:
+            if CURRENT_STOCK_COUNT[body['stock']] > 0:
+                return jsonify({
+                    'status': 'fail',
+                    'order_id': '',
+                })
         threading.Thread(target=finish_simulation_order, args=(sim_order, 10)).start()
         return jsonify({
             'status': sim_order.status.status,
@@ -1199,6 +1226,43 @@ def sell_first_stock():
         'status': 'fail',
         'order_id': '',
     })
+
+
+def finish_simulation_order(order: sj.order.Trade, wait: int):
+    HISTORY_ORDERS.append(order)
+    with simulation_count_lock:
+        buy_later = False
+
+        if order.order.action == sj.constant.Action.Buy and CURRENT_STOCK_COUNT[order.contract.code] < 0:
+            buy_later = True
+            CURRENT_STOCK_COUNT[order.contract.code] += order.order.quantity
+            logger.warning('%s has %d', order.contract.code, CURRENT_STOCK_COUNT[order.contract.code])
+
+        if order.order.action == sj.constant.Action.Sell:
+            CURRENT_STOCK_COUNT[order.contract.code] -= order.order.quantity
+            logger.warning('%s has %d', order.contract.code, CURRENT_STOCK_COUNT[order.contract.code])
+
+        # 5% may fail
+        random_number = random.randrange(100)+1
+        if random_number < 6:
+            if buy_later is True:
+                CURRENT_STOCK_COUNT[order.contract.code] -= order.order.quantity
+                logger.warning('%s has %d', order.contract.code, CURRENT_STOCK_COUNT[order.contract.code])
+
+            if order.order.action == sj.constant.Action.Sell:
+                CURRENT_STOCK_COUNT[order.contract.code] += order.order.quantity
+                logger.warning('%s has %d', order.contract.code, CURRENT_STOCK_COUNT[order.contract.code])
+            return
+
+    time.sleep(wait)
+    with simulation_count_lock:
+        for sim in HISTORY_ORDERS:
+            if sim.order.action == sj.constant.Action.Buy and order.status.id == sim.status.id and buy_later is False:
+                CURRENT_STOCK_COUNT[sim.contract.code] += sim.order.quantity
+                logger.warning('%s has %d', sim.contract.code, CURRENT_STOCK_COUNT[sim.contract.code])
+
+            if sim.status.id == order.status.id:
+                sim.status.status = sj.constant.Status.Filled
 
 
 @ api.route('/sinopac-mq-srv/trade/cancel', methods=['POST'])
@@ -1234,9 +1298,9 @@ def cancel_stock():
             type: string
     '''
     sim = request.headers['X-Simulate']
+    body = request.get_json()
     if int(sim) == 0:
         cancel_order = None
-        body = request.get_json()
         times = int()
         while True:
             mutex_update_status(-1)
@@ -1261,16 +1325,11 @@ def cancel_stock():
                     return jsonify({'result': 'success'})
             times += 1
     else:
-        return jsonify({'result': 'success'})
+        for sim in HISTORY_ORDERS:
+            if sim.status.id == body['order_id'] and sim.status.status != sj.constant.Status.Cancelled:
+                sim.status.status = sj.constant.Status.Cancelled
+                return jsonify({'result': 'success'})
     return jsonify({'result': 'fail'})
-
-
-def finish_simulation_order(order: sj.order.Trade, wait: int):
-    HISTORY_ORDERS.append(order)
-    time.sleep(wait)
-    for sim in HISTORY_ORDERS:
-        if sim.status.id == order.status.id:
-            sim.status.status = sj.constant.Status.Filled
 
 
 @ api.route('/sinopac-mq-srv/trade/status', methods=['GET'])
