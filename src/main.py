@@ -877,7 +877,7 @@ def subscribe_stock_realtime_bidask_by_stock_arr():
     stocks = body['stock_num_arr']
     for stock in stocks:
         BIDASK_SUB_LIST.append(stock)
-        logger.info('subscribe stock bid-adk %s', stock)
+        logger.info('subscribe stock realtime bid-ask %s', stock)
         token.quote.subscribe(
             token.Contracts.Stocks[stock],
             quote_type=sj.constant.QuoteType.BidAsk,
@@ -922,7 +922,7 @@ def unsubscribe_stock_realtime_bidask_by_stock_arr():
     stocks = body['stock_num_arr']
     for stock in stocks:
         BIDASK_SUB_LIST.remove(stock)
-        logger.info('unsubscribe stock bid-adk %s', stock)
+        logger.info('unsubscribe stock realtime bid-ask %s', stock)
         token.quote.unsubscribe(
             token.Contracts.Stocks[stock],
             quote_type=sj.constant.QuoteType.BidAsk,
@@ -949,7 +949,7 @@ def unsubscribe_all_stock_realtime_bidask():
     global BIDASK_SUB_LIST  # pylint: disable=global-statement
     if len(BIDASK_SUB_LIST) != 0:
         for stock in BIDASK_SUB_LIST:
-            logger.info('unsubscribe stock bid-adk %s', stock)
+            logger.info('unsubscribe stock realtime bid-ask %s', stock)
             token.quote.unsubscribe(
                 token.Contracts.Stocks[stock],
                 quote_type=sj.constant.QuoteType.BidAsk,
@@ -1774,7 +1774,7 @@ def mqtt_on_lost(client: paho.Client, userdata: None, rc: int):
     global QUOTE_SUB_LIST  # pylint: disable=global-statement
     if len(QUOTE_SUB_LIST) != 0:
         for stock in QUOTE_SUB_LIST:
-            logger.info('unsubscribe stock %s', stock)
+            logger.info('unsubscribe stock realtime tick %s', stock)
             token.quote.unsubscribe(
                 token.Contracts.Stocks[stock],
                 quote_type=sj.constant.QuoteType.Tick,
@@ -1784,7 +1784,7 @@ def mqtt_on_lost(client: paho.Client, userdata: None, rc: int):
     global BIDASK_SUB_LIST  # pylint: disable=global-statement
     if len(BIDASK_SUB_LIST) != 0:
         for stock in BIDASK_SUB_LIST:
-            logger.info('unsubscribe bid-adk %s', stock)
+            logger.info('unsubscribe stock realtime bid-ask %s', stock)
             token.quote.unsubscribe(
                 token.Contracts.Stocks[stock],
                 quote_type=sj.constant.QuoteType.BidAsk,
