@@ -1400,12 +1400,10 @@ def get_order_status_from_local_by_order_id():
         name: X-Simulate
         description: 0 = normal, 1 = simulate
         required: true
-      - in: body
-        name: order id
-        description: Cancel Order ID
+      - in: header
+        name: X-Order-ID
+        description: Order ID
         required: true
-        schema:
-          $ref: '#/definitions/OrderID'
     responses:
       200:
         description: Success Response
@@ -1416,21 +1414,21 @@ def get_order_status_from_local_by_order_id():
         description: Server Not Ready
     '''
     sim = request.headers['X-Simulate']
+    order_id = request.headers['X-Order-ID']
     if int(sim) == 0:
         mutex_update_status(-1)
-    body = request.get_json()
     if len(HISTORY_ORDERS) == 0:
         return jsonify({
             'status': 'fail',
             'order_id': '',
         })
     for order in HISTORY_ORDERS:
-        if order.order.id == body['order_id']:
+        if order.status.id == order_id:
             if order.status.status == sj.constant.Status.Cancelled:
                 order.status.status = 'Canceled'
             return jsonify({
                 'status': order.status.status,
-                'order_id': order.order.id,
+                'order_id': order.status.id,
             })
     return jsonify({
         'status': 'fail',
