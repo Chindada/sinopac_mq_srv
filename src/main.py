@@ -90,6 +90,16 @@ def get_all_stock_detail():
             type: string
     '''
     response = trade_agent_pb2.StockDetailResponse()
+    tse_001 = token.Contracts.Indexs.TSE.TSE001
+    res = trade_agent_pb2.StockDetailMessage()
+    res.exchange = tse_001.exchange
+    res.category = tse_001.category
+    res.code = tse_001.code
+    res.name = tse_001.name
+    res.reference = tse_001.reference
+    res.update_date = tse_001.update_date
+    res.day_trade = tse_001.day_trade
+    response.stock.append(res)
     for row in ALL_STOCK_NUM_LIST:
         contract = token.Contracts.Stocks[row]
         if contract is None:
