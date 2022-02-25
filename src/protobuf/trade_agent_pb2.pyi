@@ -9,22 +9,22 @@ import google.protobuf.message
 import typing
 import typing_extensions
 
-DESCRIPTOR: google.protobuf.descriptor.FileDescriptor = ...
+DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 class StockDetailResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     STOCK_FIELD_NUMBER: builtins.int
     @property
     def stock(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___StockDetailMessage]: ...
     def __init__(self,
         *,
-        stock : typing.Optional[typing.Iterable[global___StockDetailMessage]] = ...,
+        stock: typing.Optional[typing.Iterable[global___StockDetailMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["stock",b"stock"]) -> None: ...
 global___StockDetailResponse = StockDetailResponse
 
 class StockDetailMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     EXCHANGE_FIELD_NUMBER: builtins.int
     CATEGORY_FIELD_NUMBER: builtins.int
     CODE_FIELD_NUMBER: builtins.int
@@ -32,40 +32,40 @@ class StockDetailMessage(google.protobuf.message.Message):
     REFERENCE_FIELD_NUMBER: builtins.int
     UPDATE_DATE_FIELD_NUMBER: builtins.int
     DAY_TRADE_FIELD_NUMBER: builtins.int
-    exchange: typing.Text = ...
-    category: typing.Text = ...
-    code: typing.Text = ...
-    name: typing.Text = ...
-    reference: builtins.float = ...
-    update_date: typing.Text = ...
-    day_trade: typing.Text = ...
+    exchange: typing.Text
+    category: typing.Text
+    code: typing.Text
+    name: typing.Text
+    reference: builtins.float
+    update_date: typing.Text
+    day_trade: typing.Text
     def __init__(self,
         *,
-        exchange : typing.Text = ...,
-        category : typing.Text = ...,
-        code : typing.Text = ...,
-        name : typing.Text = ...,
-        reference : builtins.float = ...,
-        update_date : typing.Text = ...,
-        day_trade : typing.Text = ...,
+        exchange: typing.Text = ...,
+        category: typing.Text = ...,
+        code: typing.Text = ...,
+        name: typing.Text = ...,
+        reference: builtins.float = ...,
+        update_date: typing.Text = ...,
+        day_trade: typing.Text = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["category",b"category","code",b"code","day_trade",b"day_trade","exchange",b"exchange","name",b"name","reference",b"reference","update_date",b"update_date"]) -> None: ...
 global___StockDetailMessage = StockDetailMessage
 
 class SnapshotResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     DATA_FIELD_NUMBER: builtins.int
     @property
     def data(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___SnapshotMessage]: ...
     def __init__(self,
         *,
-        data : typing.Optional[typing.Iterable[global___SnapshotMessage]] = ...,
+        data: typing.Optional[typing.Iterable[global___SnapshotMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["data",b"data"]) -> None: ...
 global___SnapshotResponse = SnapshotResponse
 
 class SnapshotMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     TS_FIELD_NUMBER: builtins.int
     CODE_FIELD_NUMBER: builtins.int
     EXCHANGE_FIELD_NUMBER: builtins.int
@@ -88,76 +88,76 @@ class SnapshotMessage(google.protobuf.message.Message):
     SELL_PRICE_FIELD_NUMBER: builtins.int
     SELL_VOLUME_FIELD_NUMBER: builtins.int
     VOLUME_RATIO_FIELD_NUMBER: builtins.int
-    ts: builtins.int = ...
-    code: typing.Text = ...
-    exchange: typing.Text = ...
-    open: builtins.float = ...
-    high: builtins.float = ...
-    low: builtins.float = ...
-    close: builtins.float = ...
-    tick_type: typing.Text = ...
-    change_price: builtins.float = ...
-    change_rate: builtins.float = ...
-    change_type: typing.Text = ...
-    average_price: builtins.float = ...
-    volume: builtins.int = ...
-    total_volume: builtins.int = ...
-    amount: builtins.int = ...
-    total_amount: builtins.int = ...
-    yesterday_volume: builtins.float = ...
-    buy_price: builtins.float = ...
-    buy_volume: builtins.float = ...
-    sell_price: builtins.float = ...
-    sell_volume: builtins.int = ...
-    volume_ratio: builtins.float = ...
+    ts: builtins.int
+    code: typing.Text
+    exchange: typing.Text
+    open: builtins.float
+    high: builtins.float
+    low: builtins.float
+    close: builtins.float
+    tick_type: typing.Text
+    change_price: builtins.float
+    change_rate: builtins.float
+    change_type: typing.Text
+    average_price: builtins.float
+    volume: builtins.int
+    total_volume: builtins.int
+    amount: builtins.int
+    total_amount: builtins.int
+    yesterday_volume: builtins.float
+    buy_price: builtins.float
+    buy_volume: builtins.float
+    sell_price: builtins.float
+    sell_volume: builtins.int
+    volume_ratio: builtins.float
     def __init__(self,
         *,
-        ts : builtins.int = ...,
-        code : typing.Text = ...,
-        exchange : typing.Text = ...,
-        open : builtins.float = ...,
-        high : builtins.float = ...,
-        low : builtins.float = ...,
-        close : builtins.float = ...,
-        tick_type : typing.Text = ...,
-        change_price : builtins.float = ...,
-        change_rate : builtins.float = ...,
-        change_type : typing.Text = ...,
-        average_price : builtins.float = ...,
-        volume : builtins.int = ...,
-        total_volume : builtins.int = ...,
-        amount : builtins.int = ...,
-        total_amount : builtins.int = ...,
-        yesterday_volume : builtins.float = ...,
-        buy_price : builtins.float = ...,
-        buy_volume : builtins.float = ...,
-        sell_price : builtins.float = ...,
-        sell_volume : builtins.int = ...,
-        volume_ratio : builtins.float = ...,
+        ts: builtins.int = ...,
+        code: typing.Text = ...,
+        exchange: typing.Text = ...,
+        open: builtins.float = ...,
+        high: builtins.float = ...,
+        low: builtins.float = ...,
+        close: builtins.float = ...,
+        tick_type: typing.Text = ...,
+        change_price: builtins.float = ...,
+        change_rate: builtins.float = ...,
+        change_type: typing.Text = ...,
+        average_price: builtins.float = ...,
+        volume: builtins.int = ...,
+        total_volume: builtins.int = ...,
+        amount: builtins.int = ...,
+        total_amount: builtins.int = ...,
+        yesterday_volume: builtins.float = ...,
+        buy_price: builtins.float = ...,
+        buy_volume: builtins.float = ...,
+        sell_price: builtins.float = ...,
+        sell_volume: builtins.int = ...,
+        volume_ratio: builtins.float = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["amount",b"amount","average_price",b"average_price","buy_price",b"buy_price","buy_volume",b"buy_volume","change_price",b"change_price","change_rate",b"change_rate","change_type",b"change_type","close",b"close","code",b"code","exchange",b"exchange","high",b"high","low",b"low","open",b"open","sell_price",b"sell_price","sell_volume",b"sell_volume","tick_type",b"tick_type","total_amount",b"total_amount","total_volume",b"total_volume","ts",b"ts","volume",b"volume","volume_ratio",b"volume_ratio","yesterday_volume",b"yesterday_volume"]) -> None: ...
 global___SnapshotMessage = SnapshotMessage
 
 class HistoryTickResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     STOCK_NUM_FIELD_NUMBER: builtins.int
     DATE_FIELD_NUMBER: builtins.int
     DATA_FIELD_NUMBER: builtins.int
-    stock_num: typing.Text = ...
-    date: typing.Text = ...
+    stock_num: typing.Text
+    date: typing.Text
     @property
     def data(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___HistoryTickMessage]: ...
     def __init__(self,
         *,
-        stock_num : typing.Text = ...,
-        date : typing.Text = ...,
-        data : typing.Optional[typing.Iterable[global___HistoryTickMessage]] = ...,
+        stock_num: typing.Text = ...,
+        date: typing.Text = ...,
+        data: typing.Optional[typing.Iterable[global___HistoryTickMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["data",b"data","date",b"date","stock_num",b"stock_num"]) -> None: ...
 global___HistoryTickResponse = HistoryTickResponse
 
 class HistoryTickMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     TS_FIELD_NUMBER: builtins.int
     CLOSE_FIELD_NUMBER: builtins.int
     VOLUME_FIELD_NUMBER: builtins.int
@@ -166,124 +166,124 @@ class HistoryTickMessage(google.protobuf.message.Message):
     ASK_PRICE_FIELD_NUMBER: builtins.int
     ASK_VOLUME_FIELD_NUMBER: builtins.int
     TICK_TYPE_FIELD_NUMBER: builtins.int
-    ts: builtins.int = ...
-    close: builtins.float = ...
-    volume: builtins.int = ...
-    bid_price: builtins.float = ...
-    bid_volume: builtins.int = ...
-    ask_price: builtins.float = ...
-    ask_volume: builtins.int = ...
-    tick_type: builtins.int = ...
+    ts: builtins.int
+    close: builtins.float
+    volume: builtins.int
+    bid_price: builtins.float
+    bid_volume: builtins.int
+    ask_price: builtins.float
+    ask_volume: builtins.int
+    tick_type: builtins.int
     def __init__(self,
         *,
-        ts : builtins.int = ...,
-        close : builtins.float = ...,
-        volume : builtins.int = ...,
-        bid_price : builtins.float = ...,
-        bid_volume : builtins.int = ...,
-        ask_price : builtins.float = ...,
-        ask_volume : builtins.int = ...,
-        tick_type : builtins.int = ...,
+        ts: builtins.int = ...,
+        close: builtins.float = ...,
+        volume: builtins.int = ...,
+        bid_price: builtins.float = ...,
+        bid_volume: builtins.int = ...,
+        ask_price: builtins.float = ...,
+        ask_volume: builtins.int = ...,
+        tick_type: builtins.int = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["ask_price",b"ask_price","ask_volume",b"ask_volume","bid_price",b"bid_price","bid_volume",b"bid_volume","close",b"close","tick_type",b"tick_type","ts",b"ts","volume",b"volume"]) -> None: ...
 global___HistoryTickMessage = HistoryTickMessage
 
 class HistoryKbarResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     STOCK_NUM_FIELD_NUMBER: builtins.int
     START_DATE_FIELD_NUMBER: builtins.int
     END_DATE_FIELD_NUMBER: builtins.int
     DATA_FIELD_NUMBER: builtins.int
-    stock_num: typing.Text = ...
-    start_date: typing.Text = ...
-    end_date: typing.Text = ...
+    stock_num: typing.Text
+    start_date: typing.Text
+    end_date: typing.Text
     @property
     def data(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___HistoryKbarMessage]: ...
     def __init__(self,
         *,
-        stock_num : typing.Text = ...,
-        start_date : typing.Text = ...,
-        end_date : typing.Text = ...,
-        data : typing.Optional[typing.Iterable[global___HistoryKbarMessage]] = ...,
+        stock_num: typing.Text = ...,
+        start_date: typing.Text = ...,
+        end_date: typing.Text = ...,
+        data: typing.Optional[typing.Iterable[global___HistoryKbarMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["data",b"data","end_date",b"end_date","start_date",b"start_date","stock_num",b"stock_num"]) -> None: ...
 global___HistoryKbarResponse = HistoryKbarResponse
 
 class HistoryKbarMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     TS_FIELD_NUMBER: builtins.int
     CLOSE_FIELD_NUMBER: builtins.int
     OPEN_FIELD_NUMBER: builtins.int
     HIGH_FIELD_NUMBER: builtins.int
     LOW_FIELD_NUMBER: builtins.int
     VOLUME_FIELD_NUMBER: builtins.int
-    ts: builtins.int = ...
-    Close: builtins.float = ...
-    Open: builtins.float = ...
-    High: builtins.float = ...
-    Low: builtins.float = ...
-    Volume: builtins.int = ...
+    ts: builtins.int
+    Close: builtins.float
+    Open: builtins.float
+    High: builtins.float
+    Low: builtins.float
+    Volume: builtins.int
     def __init__(self,
         *,
-        ts : builtins.int = ...,
-        Close : builtins.float = ...,
-        Open : builtins.float = ...,
-        High : builtins.float = ...,
-        Low : builtins.float = ...,
-        Volume : builtins.int = ...,
+        ts: builtins.int = ...,
+        Close: builtins.float = ...,
+        Open: builtins.float = ...,
+        High: builtins.float = ...,
+        Low: builtins.float = ...,
+        Volume: builtins.int = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["Close",b"Close","High",b"High","Low",b"Low","Open",b"Open","Volume",b"Volume","ts",b"ts"]) -> None: ...
 global___HistoryKbarMessage = HistoryKbarMessage
 
 class HistoryCloseResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     DATA_FIELD_NUMBER: builtins.int
     @property
     def data(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___HistoryCloseMessage]: ...
     def __init__(self,
         *,
-        data : typing.Optional[typing.Iterable[global___HistoryCloseMessage]] = ...,
+        data: typing.Optional[typing.Iterable[global___HistoryCloseMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["data",b"data"]) -> None: ...
 global___HistoryCloseResponse = HistoryCloseResponse
 
 class HistoryCloseMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     DATE_FIELD_NUMBER: builtins.int
     CODE_FIELD_NUMBER: builtins.int
     CLOSE_FIELD_NUMBER: builtins.int
-    date: typing.Text = ...
-    code: typing.Text = ...
-    close: builtins.float = ...
+    date: typing.Text
+    code: typing.Text
+    close: builtins.float
     def __init__(self,
         *,
-        date : typing.Text = ...,
-        code : typing.Text = ...,
-        close : builtins.float = ...,
+        date: typing.Text = ...,
+        code: typing.Text = ...,
+        close: builtins.float = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["close",b"close","code",b"code","date",b"date"]) -> None: ...
 global___HistoryCloseMessage = HistoryCloseMessage
 
 class VolumeRankResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     COUNT_FIELD_NUMBER: builtins.int
     DATE_FIELD_NUMBER: builtins.int
     DATA_FIELD_NUMBER: builtins.int
-    count: builtins.int = ...
-    date: typing.Text = ...
+    count: builtins.int
+    date: typing.Text
     @property
     def data(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___VolumeRankMessage]: ...
     def __init__(self,
         *,
-        count : builtins.int = ...,
-        date : typing.Text = ...,
-        data : typing.Optional[typing.Iterable[global___VolumeRankMessage]] = ...,
+        count: builtins.int = ...,
+        date: typing.Text = ...,
+        data: typing.Optional[typing.Iterable[global___VolumeRankMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["count",b"count","data",b"data","date",b"date"]) -> None: ...
 global___VolumeRankResponse = VolumeRankResponse
 
 class VolumeRankMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     DATE_FIELD_NUMBER: builtins.int
     CODE_FIELD_NUMBER: builtins.int
     NAME_FIELD_NUMBER: builtins.int
@@ -311,80 +311,80 @@ class VolumeRankMessage(google.protobuf.message.Message):
     BID_VOLUMES_FIELD_NUMBER: builtins.int
     ASK_ORDERS_FIELD_NUMBER: builtins.int
     ASK_VOLUMES_FIELD_NUMBER: builtins.int
-    date: typing.Text = ...
-    code: typing.Text = ...
-    name: typing.Text = ...
-    ts: builtins.int = ...
-    open: builtins.float = ...
-    high: builtins.float = ...
-    low: builtins.float = ...
-    close: builtins.float = ...
-    price_range: builtins.float = ...
-    tick_type: builtins.int = ...
-    change_price: builtins.float = ...
-    change_type: builtins.int = ...
-    average_price: builtins.float = ...
-    volume: builtins.int = ...
-    total_volume: builtins.int = ...
-    amount: builtins.int = ...
-    total_amount: builtins.int = ...
-    yesterday_volume: builtins.int = ...
-    volume_ratio: builtins.float = ...
-    buy_price: builtins.float = ...
-    buy_volume: builtins.int = ...
-    sell_price: builtins.float = ...
-    sell_volume: builtins.int = ...
-    bid_orders: builtins.int = ...
-    bid_volumes: builtins.int = ...
-    ask_orders: builtins.int = ...
-    ask_volumes: builtins.int = ...
+    date: typing.Text
+    code: typing.Text
+    name: typing.Text
+    ts: builtins.int
+    open: builtins.float
+    high: builtins.float
+    low: builtins.float
+    close: builtins.float
+    price_range: builtins.float
+    tick_type: builtins.int
+    change_price: builtins.float
+    change_type: builtins.int
+    average_price: builtins.float
+    volume: builtins.int
+    total_volume: builtins.int
+    amount: builtins.int
+    total_amount: builtins.int
+    yesterday_volume: builtins.int
+    volume_ratio: builtins.float
+    buy_price: builtins.float
+    buy_volume: builtins.int
+    sell_price: builtins.float
+    sell_volume: builtins.int
+    bid_orders: builtins.int
+    bid_volumes: builtins.int
+    ask_orders: builtins.int
+    ask_volumes: builtins.int
     def __init__(self,
         *,
-        date : typing.Text = ...,
-        code : typing.Text = ...,
-        name : typing.Text = ...,
-        ts : builtins.int = ...,
-        open : builtins.float = ...,
-        high : builtins.float = ...,
-        low : builtins.float = ...,
-        close : builtins.float = ...,
-        price_range : builtins.float = ...,
-        tick_type : builtins.int = ...,
-        change_price : builtins.float = ...,
-        change_type : builtins.int = ...,
-        average_price : builtins.float = ...,
-        volume : builtins.int = ...,
-        total_volume : builtins.int = ...,
-        amount : builtins.int = ...,
-        total_amount : builtins.int = ...,
-        yesterday_volume : builtins.int = ...,
-        volume_ratio : builtins.float = ...,
-        buy_price : builtins.float = ...,
-        buy_volume : builtins.int = ...,
-        sell_price : builtins.float = ...,
-        sell_volume : builtins.int = ...,
-        bid_orders : builtins.int = ...,
-        bid_volumes : builtins.int = ...,
-        ask_orders : builtins.int = ...,
-        ask_volumes : builtins.int = ...,
+        date: typing.Text = ...,
+        code: typing.Text = ...,
+        name: typing.Text = ...,
+        ts: builtins.int = ...,
+        open: builtins.float = ...,
+        high: builtins.float = ...,
+        low: builtins.float = ...,
+        close: builtins.float = ...,
+        price_range: builtins.float = ...,
+        tick_type: builtins.int = ...,
+        change_price: builtins.float = ...,
+        change_type: builtins.int = ...,
+        average_price: builtins.float = ...,
+        volume: builtins.int = ...,
+        total_volume: builtins.int = ...,
+        amount: builtins.int = ...,
+        total_amount: builtins.int = ...,
+        yesterday_volume: builtins.int = ...,
+        volume_ratio: builtins.float = ...,
+        buy_price: builtins.float = ...,
+        buy_volume: builtins.int = ...,
+        sell_price: builtins.float = ...,
+        sell_volume: builtins.int = ...,
+        bid_orders: builtins.int = ...,
+        bid_volumes: builtins.int = ...,
+        ask_orders: builtins.int = ...,
+        ask_volumes: builtins.int = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["amount",b"amount","ask_orders",b"ask_orders","ask_volumes",b"ask_volumes","average_price",b"average_price","bid_orders",b"bid_orders","bid_volumes",b"bid_volumes","buy_price",b"buy_price","buy_volume",b"buy_volume","change_price",b"change_price","change_type",b"change_type","close",b"close","code",b"code","date",b"date","high",b"high","low",b"low","name",b"name","open",b"open","price_range",b"price_range","sell_price",b"sell_price","sell_volume",b"sell_volume","tick_type",b"tick_type","total_amount",b"total_amount","total_volume",b"total_volume","ts",b"ts","volume",b"volume","volume_ratio",b"volume_ratio","yesterday_volume",b"yesterday_volume"]) -> None: ...
 global___VolumeRankMessage = VolumeRankMessage
 
 class OrderStatusHistoryResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     DATA_FIELD_NUMBER: builtins.int
     @property
     def data(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___OrderStatusHistoryMessage]: ...
     def __init__(self,
         *,
-        data : typing.Optional[typing.Iterable[global___OrderStatusHistoryMessage]] = ...,
+        data: typing.Optional[typing.Iterable[global___OrderStatusHistoryMessage]] = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["data",b"data"]) -> None: ...
 global___OrderStatusHistoryResponse = OrderStatusHistoryResponse
 
 class OrderStatusHistoryMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     STATUS_FIELD_NUMBER: builtins.int
     CODE_FIELD_NUMBER: builtins.int
     ACTION_FIELD_NUMBER: builtins.int
@@ -392,44 +392,44 @@ class OrderStatusHistoryMessage(google.protobuf.message.Message):
     QUANTITY_FIELD_NUMBER: builtins.int
     ORDER_ID_FIELD_NUMBER: builtins.int
     ORDER_TIME_FIELD_NUMBER: builtins.int
-    status: typing.Text = ...
-    code: typing.Text = ...
-    action: typing.Text = ...
-    price: builtins.float = ...
-    quantity: builtins.int = ...
-    order_id: typing.Text = ...
-    order_time: typing.Text = ...
+    status: typing.Text
+    code: typing.Text
+    action: typing.Text
+    price: builtins.float
+    quantity: builtins.int
+    order_id: typing.Text
+    order_time: typing.Text
     def __init__(self,
         *,
-        status : typing.Text = ...,
-        code : typing.Text = ...,
-        action : typing.Text = ...,
-        price : builtins.float = ...,
-        quantity : builtins.int = ...,
-        order_id : typing.Text = ...,
-        order_time : typing.Text = ...,
+        status: typing.Text = ...,
+        code: typing.Text = ...,
+        action: typing.Text = ...,
+        price: builtins.float = ...,
+        quantity: builtins.int = ...,
+        order_id: typing.Text = ...,
+        order_time: typing.Text = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["action",b"action","code",b"code","order_id",b"order_id","order_time",b"order_time","price",b"price","quantity",b"quantity","status",b"status"]) -> None: ...
 global___OrderStatusHistoryMessage = OrderStatusHistoryMessage
 
 class RealTimeTickResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     EXCHANGE_FIELD_NUMBER: builtins.int
     TICK_FIELD_NUMBER: builtins.int
-    exchange: typing.Text = ...
+    exchange: typing.Text
     @property
     def tick(self) -> global___RealTimeTickMessage: ...
     def __init__(self,
         *,
-        exchange : typing.Text = ...,
-        tick : typing.Optional[global___RealTimeTickMessage] = ...,
+        exchange: typing.Text = ...,
+        tick: typing.Optional[global___RealTimeTickMessage] = ...,
         ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["tick",b"tick"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["exchange",b"exchange","tick",b"tick"]) -> None: ...
 global___RealTimeTickResponse = RealTimeTickResponse
 
 class RealTimeTickMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     CODE_FIELD_NUMBER: builtins.int
     DATE_TIME_FIELD_NUMBER: builtins.int
     OPEN_FIELD_NUMBER: builtins.int
@@ -451,72 +451,72 @@ class RealTimeTickMessage(google.protobuf.message.Message):
     ASK_SIDE_TOTAL_CNT_FIELD_NUMBER: builtins.int
     SUSPEND_FIELD_NUMBER: builtins.int
     SIMTRADE_FIELD_NUMBER: builtins.int
-    code: typing.Text = ...
-    date_time: typing.Text = ...
-    open: builtins.float = ...
-    avg_price: builtins.float = ...
-    close: builtins.float = ...
-    high: builtins.float = ...
-    low: builtins.float = ...
-    amount: builtins.float = ...
-    total_amount: builtins.float = ...
-    volume: builtins.int = ...
-    total_volume: builtins.int = ...
-    tick_type: builtins.int = ...
-    chg_type: builtins.int = ...
-    price_chg: builtins.float = ...
-    pct_chg: builtins.float = ...
-    bid_side_total_vol: builtins.int = ...
-    ask_side_total_vol: builtins.int = ...
-    bid_side_total_cnt: builtins.int = ...
-    ask_side_total_cnt: builtins.int = ...
-    suspend: builtins.int = ...
-    simtrade: builtins.int = ...
+    code: typing.Text
+    date_time: typing.Text
+    open: builtins.float
+    avg_price: builtins.float
+    close: builtins.float
+    high: builtins.float
+    low: builtins.float
+    amount: builtins.float
+    total_amount: builtins.float
+    volume: builtins.int
+    total_volume: builtins.int
+    tick_type: builtins.int
+    chg_type: builtins.int
+    price_chg: builtins.float
+    pct_chg: builtins.float
+    bid_side_total_vol: builtins.int
+    ask_side_total_vol: builtins.int
+    bid_side_total_cnt: builtins.int
+    ask_side_total_cnt: builtins.int
+    suspend: builtins.int
+    simtrade: builtins.int
     def __init__(self,
         *,
-        code : typing.Text = ...,
-        date_time : typing.Text = ...,
-        open : builtins.float = ...,
-        avg_price : builtins.float = ...,
-        close : builtins.float = ...,
-        high : builtins.float = ...,
-        low : builtins.float = ...,
-        amount : builtins.float = ...,
-        total_amount : builtins.float = ...,
-        volume : builtins.int = ...,
-        total_volume : builtins.int = ...,
-        tick_type : builtins.int = ...,
-        chg_type : builtins.int = ...,
-        price_chg : builtins.float = ...,
-        pct_chg : builtins.float = ...,
-        bid_side_total_vol : builtins.int = ...,
-        ask_side_total_vol : builtins.int = ...,
-        bid_side_total_cnt : builtins.int = ...,
-        ask_side_total_cnt : builtins.int = ...,
-        suspend : builtins.int = ...,
-        simtrade : builtins.int = ...,
+        code: typing.Text = ...,
+        date_time: typing.Text = ...,
+        open: builtins.float = ...,
+        avg_price: builtins.float = ...,
+        close: builtins.float = ...,
+        high: builtins.float = ...,
+        low: builtins.float = ...,
+        amount: builtins.float = ...,
+        total_amount: builtins.float = ...,
+        volume: builtins.int = ...,
+        total_volume: builtins.int = ...,
+        tick_type: builtins.int = ...,
+        chg_type: builtins.int = ...,
+        price_chg: builtins.float = ...,
+        pct_chg: builtins.float = ...,
+        bid_side_total_vol: builtins.int = ...,
+        ask_side_total_vol: builtins.int = ...,
+        bid_side_total_cnt: builtins.int = ...,
+        ask_side_total_cnt: builtins.int = ...,
+        suspend: builtins.int = ...,
+        simtrade: builtins.int = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["amount",b"amount","ask_side_total_cnt",b"ask_side_total_cnt","ask_side_total_vol",b"ask_side_total_vol","avg_price",b"avg_price","bid_side_total_cnt",b"bid_side_total_cnt","bid_side_total_vol",b"bid_side_total_vol","chg_type",b"chg_type","close",b"close","code",b"code","date_time",b"date_time","high",b"high","low",b"low","open",b"open","pct_chg",b"pct_chg","price_chg",b"price_chg","simtrade",b"simtrade","suspend",b"suspend","tick_type",b"tick_type","total_amount",b"total_amount","total_volume",b"total_volume","volume",b"volume"]) -> None: ...
 global___RealTimeTickMessage = RealTimeTickMessage
 
 class RealTimeBidAskResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     EXCHANGE_FIELD_NUMBER: builtins.int
     BID_ASK_FIELD_NUMBER: builtins.int
-    exchange: typing.Text = ...
+    exchange: typing.Text
     @property
     def bid_ask(self) -> global___RealTimeBidAskMessage: ...
     def __init__(self,
         *,
-        exchange : typing.Text = ...,
-        bid_ask : typing.Optional[global___RealTimeBidAskMessage] = ...,
+        exchange: typing.Text = ...,
+        bid_ask: typing.Optional[global___RealTimeBidAskMessage] = ...,
         ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["bid_ask",b"bid_ask"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["bid_ask",b"bid_ask","exchange",b"exchange"]) -> None: ...
 global___RealTimeBidAskResponse = RealTimeBidAskResponse
 
 class RealTimeBidAskMessage(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     CODE_FIELD_NUMBER: builtins.int
     DATE_TIME_FIELD_NUMBER: builtins.int
     BID_PRICE_FIELD_NUMBER: builtins.int
@@ -527,8 +527,8 @@ class RealTimeBidAskMessage(google.protobuf.message.Message):
     DIFF_ASK_VOL_FIELD_NUMBER: builtins.int
     SUSPEND_FIELD_NUMBER: builtins.int
     SIMTRADE_FIELD_NUMBER: builtins.int
-    code: typing.Text = ...
-    date_time: typing.Text = ...
+    code: typing.Text
+    date_time: typing.Text
     @property
     def bid_price(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.float]: ...
     @property
@@ -541,40 +541,40 @@ class RealTimeBidAskMessage(google.protobuf.message.Message):
     def ask_volume(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
     @property
     def diff_ask_vol(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
-    suspend: builtins.int = ...
-    simtrade: builtins.int = ...
+    suspend: builtins.int
+    simtrade: builtins.int
     def __init__(self,
         *,
-        code : typing.Text = ...,
-        date_time : typing.Text = ...,
-        bid_price : typing.Optional[typing.Iterable[builtins.float]] = ...,
-        bid_volume : typing.Optional[typing.Iterable[builtins.int]] = ...,
-        diff_bid_vol : typing.Optional[typing.Iterable[builtins.int]] = ...,
-        ask_price : typing.Optional[typing.Iterable[builtins.float]] = ...,
-        ask_volume : typing.Optional[typing.Iterable[builtins.int]] = ...,
-        diff_ask_vol : typing.Optional[typing.Iterable[builtins.int]] = ...,
-        suspend : builtins.int = ...,
-        simtrade : builtins.int = ...,
+        code: typing.Text = ...,
+        date_time: typing.Text = ...,
+        bid_price: typing.Optional[typing.Iterable[builtins.float]] = ...,
+        bid_volume: typing.Optional[typing.Iterable[builtins.int]] = ...,
+        diff_bid_vol: typing.Optional[typing.Iterable[builtins.int]] = ...,
+        ask_price: typing.Optional[typing.Iterable[builtins.float]] = ...,
+        ask_volume: typing.Optional[typing.Iterable[builtins.int]] = ...,
+        diff_ask_vol: typing.Optional[typing.Iterable[builtins.int]] = ...,
+        suspend: builtins.int = ...,
+        simtrade: builtins.int = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["ask_price",b"ask_price","ask_volume",b"ask_volume","bid_price",b"bid_price","bid_volume",b"bid_volume","code",b"code","date_time",b"date_time","diff_ask_vol",b"diff_ask_vol","diff_bid_vol",b"diff_bid_vol","simtrade",b"simtrade","suspend",b"suspend"]) -> None: ...
 global___RealTimeBidAskMessage = RealTimeBidAskMessage
 
 class EventResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
     RESP_CODE_FIELD_NUMBER: builtins.int
     EVENT_CODE_FIELD_NUMBER: builtins.int
     INFO_FIELD_NUMBER: builtins.int
     EVENT_FIELD_NUMBER: builtins.int
-    resp_code: builtins.int = ...
-    event_code: builtins.int = ...
-    info: typing.Text = ...
-    event: typing.Text = ...
+    resp_code: builtins.int
+    event_code: builtins.int
+    info: typing.Text
+    event: typing.Text
     def __init__(self,
         *,
-        resp_code : builtins.int = ...,
-        event_code : builtins.int = ...,
-        info : typing.Text = ...,
-        event : typing.Text = ...,
+        resp_code: builtins.int = ...,
+        event_code: builtins.int = ...,
+        info: typing.Text = ...,
+        event: typing.Text = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["event",b"event","event_code",b"event_code","info",b"info","resp_code",b"resp_code"]) -> None: ...
 global___EventResponse = EventResponse
