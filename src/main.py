@@ -1,25 +1,26 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
 '''SINOPAC PYTHON API FORWARDER'''
-from re import search
-from datetime import datetime
-import threading
-import time
+import logging
+import os
+import random
 import ssl
 import string
-import random
-import logging
 import sys
-import os
+import threading
+import time
 import typing
-import shioaji as sj
-import paho.mqtt.client as paho
-from flask import Flask,  request, jsonify
-from flasgger import Swagger
-from waitress import serve
-from protobuf import trade_agent_pb2
-import mq_topic
+from datetime import datetime
+from re import search
 
+import paho.mqtt.client as paho
+import shioaji as sj
+from flasgger import Swagger
+from flask import Flask, jsonify, request
+from waitress import serve
+
+import mq_topic
+from protobuf import trade_agent_pb2
 
 deployment = os.getenv('DEPLOYMENT')
 server_token = ''.join(random.choice(string.ascii_letters) for _ in range(25))
@@ -55,7 +56,7 @@ logger.addHandler(file_handler)
 logger.setLevel(logging.INFO)
 
 
-SINOPAC_LOGIN_STATUS = int()
+# SINOPAC_LOGIN_STATUS = int()
 UP_TIME = int()
 ERROR_TIMES = int()
 
@@ -100,10 +101,12 @@ def get_all_stock_detail():
     res.update_date = tse_001.update_date
     res.day_trade = tse_001.day_trade
     response.stock.append(res)
-    for row in ALL_STOCK_NUM_LIST:
+    global ALL_STOCK_NUM_LIST  # pylint: disable=global-statement
+    tmp = ALL_STOCK_NUM_LIST
+    for row in tmp:
         contract = token.Contracts.Stocks[row]
         if contract is None:
-            ALL_STOCK_NUM_LIST.remove(row)
+            tmp.remove(row)
             logger.info('%s is no data', row)
             continue
         res = trade_agent_pb2.StockDetailMessage()
@@ -115,6 +118,7 @@ def get_all_stock_detail():
         res.update_date = contract.update_date
         res.day_trade = contract.day_trade
         response.stock.append(res)
+    ALL_STOCK_NUM_LIST = tmp
     if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
         logger.warning(response)
         return jsonify({'result': 'mq broker is disconnected'})
@@ -1676,6 +1680,10 @@ def fill_all_stock_local_list():
     '''Fill ALL_STOCK_NUM_LIST'''
     global ALL_STOCK_NUM_LIST  # pylint: disable=global-statement
     ALL_STOCK_NUM_LIST = []
+    while True:
+        if len(list(token.Contracts.Stocks)) != 0:
+            logger.info('Stock Contract(%d) is ready', len(list(token.Contracts.Stocks)))
+            break
     for all_contract in token.Contracts.Stocks:
         for day_trade_stock in all_contract:
             if day_trade_stock.day_trade == 'Yes':
@@ -1739,11 +1747,12 @@ def place_order_callback(order_state: sj.constant.OrderState, order: dict):
 
 def login_callback(security_type: sj.constant.SecurityType):
     '''Login event callback'''
-    with mutex:
-        global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
-        if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
-            SINOPAC_LOGIN_STATUS += 1
-            logger.warning('login step: %d/4, %s', SINOPAC_LOGIN_STATUS, security_type)
+    logger.warning('fetch done: %s', security_type)
+    # with mutex:
+    #     global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
+    #     if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
+    #         SINOPAC_LOGIN_STATUS += 1
+    #         logger.warning('login step: %d/4, %s', SINOPAC_LOGIN_STATUS, security_type)
 
 
 def sinopac_login():
@@ -1753,9 +1762,9 @@ def sinopac_login():
         passwd=sys.argv[3],
         contracts_cb=login_callback
     )
-    while True:
-        if SINOPAC_LOGIN_STATUS == 4:
-            break
+    # while True:
+    #     if SINOPAC_LOGIN_STATUS == 4:
+    #         break
     token.activate_ca(
         ca_path='./data/ca_sinopac.pfx',
         ca_passwd=sys.argv[4],
