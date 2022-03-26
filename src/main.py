@@ -56,7 +56,7 @@ logger.addHandler(file_handler)
 logger.setLevel(logging.INFO)
 
 
-# SINOPAC_LOGIN_STATUS = int()
+SINOPAC_LOGIN_STATUS = int()
 UP_TIME = int()
 ERROR_TIMES = int()
 
@@ -1680,10 +1680,6 @@ def fill_all_stock_local_list():
     '''Fill ALL_STOCK_NUM_LIST'''
     global ALL_STOCK_NUM_LIST  # pylint: disable=global-statement
     ALL_STOCK_NUM_LIST = []
-    while True:
-        if len(list(token.Contracts.Stocks)) != 0:
-            logger.info('Stock Contract(%d) is ready', len(list(token.Contracts.Stocks)))
-            break
     for all_contract in token.Contracts.Stocks:
         for day_trade_stock in all_contract:
             if day_trade_stock.day_trade == 'Yes':
@@ -1747,12 +1743,12 @@ def place_order_callback(order_state: sj.constant.OrderState, order: dict):
 
 def login_callback(security_type: sj.constant.SecurityType):
     '''Login event callback'''
-    logger.warning('fetch done: %s', security_type)
-    # with mutex:
-    #     global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
-    #     if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
-    #         SINOPAC_LOGIN_STATUS += 1
-    #         logger.warning('login step: %d/4, %s', SINOPAC_LOGIN_STATUS, security_type)
+    # logger.warning('fetch done: %s', security_type)
+    with mutex:
+        global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
+        if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
+            SINOPAC_LOGIN_STATUS += 1
+            logger.warning('login step: %d/4, %s', SINOPAC_LOGIN_STATUS, security_type)
 
 
 def sinopac_login():
@@ -1762,9 +1758,9 @@ def sinopac_login():
         passwd=sys.argv[3],
         contracts_cb=login_callback
     )
-    # while True:
-    #     if SINOPAC_LOGIN_STATUS == 4:
-    #         break
+    while True:
+        if SINOPAC_LOGIN_STATUS == 4:
+            break
     token.activate_ca(
         ca_path='./data/ca_sinopac.pfx',
         ca_passwd=sys.argv[4],
