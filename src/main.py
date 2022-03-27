@@ -29,6 +29,7 @@ api = Flask(__name__)
 swagger = Swagger(api)
 
 token = sj.Shioaji()
+login_mutex = threading.Lock()
 mutex = threading.Lock()
 simulation_count_lock = threading.Lock()
 MQTT_CLIENT = paho.Client()
@@ -1684,6 +1685,9 @@ def fill_all_stock_local_list():
         for day_trade_stock in all_contract:
             if day_trade_stock.day_trade == 'Yes':
                 ALL_STOCK_NUM_LIST.append(day_trade_stock.code)
+    while True:
+        if len(ALL_STOCK_NUM_LIST) != 0:
+            break
     logger.info('Filling ALL_STOCK_NUM_LIST, total: %d', len(ALL_STOCK_NUM_LIST))
 
 
@@ -1743,12 +1747,11 @@ def place_order_callback(order_state: sj.constant.OrderState, order: dict):
 
 def login_callback(security_type: sj.constant.SecurityType):
     '''Login event callback'''
-    # logger.warning('fetch done: %s', security_type)
-    with mutex:
+    with login_mutex:
         global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
         if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
-            SINOPAC_LOGIN_STATUS += 1
-            logger.warning('login step: %d/4, %s', SINOPAC_LOGIN_STATUS, security_type)
+            SINOPAC_LOGIN_STATUS += 25
+            logger.warning('login progress: %d%%, %s', SINOPAC_LOGIN_STATUS, security_type)
 
 
 def sinopac_login():
@@ -1758,9 +1761,11 @@ def sinopac_login():
         passwd=sys.argv[3],
         contracts_cb=login_callback
     )
-    while True:
-        if SINOPAC_LOGIN_STATUS == 4:
-            break
+    for account in token.list_accounts():
+        logger.info(account)
+    # while True:
+    #     if SINOPAC_LOGIN_STATUS == 100:
+    #         break
     token.activate_ca(
         ca_path='./data/ca_sinopac.pfx',
         ca_passwd=sys.argv[4],
