@@ -1759,6 +1759,7 @@ def sinopac_login():
     token.login(
         person_id=sys.argv[2],
         passwd=sys.argv[3],
+        fetch_contract=True,
         contracts_cb=login_callback
     )
     for account in token.list_accounts():
