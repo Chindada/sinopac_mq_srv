@@ -1747,11 +1747,11 @@ def place_order_callback(order_state: sj.constant.OrderState, order: dict):
 
 def login_callback(security_type: sj.constant.SecurityType):
     '''Login event callback'''
-    with login_mutex:
-        global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
-        if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
-            SINOPAC_LOGIN_STATUS += 25
-            logger.warning('login progress: %d%%, %s', SINOPAC_LOGIN_STATUS, security_type)
+    # with login_mutex:
+    global SINOPAC_LOGIN_STATUS  # pylint: disable=global-statement
+    if security_type.value in ('STK', 'IND', 'FUT', 'OPT'):
+        SINOPAC_LOGIN_STATUS += 25
+        logger.warning('login progress: %d%%, %s', SINOPAC_LOGIN_STATUS, security_type)
 
 
 def sinopac_login():
