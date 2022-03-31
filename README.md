@@ -23,8 +23,11 @@ mypy --install-types --non-interactive ./src/main.py
 
 ```sh
 pip freeze > requirements.txt && \
-pip uninstall -y -r requirements.txt && \
-pip install \
+pip uninstall -y -r requirements.txt
+```
+
+```sh
+pip install -U \
     --no-warn-script-location \
     --no-cache-dir \
     requests shioaji Flask flasgger waitress \
@@ -32,6 +35,7 @@ pip install \
     pylint pylint-protobuf simplejson paho-mqtt && \
 mypy --install-types --non-interactive ./src/main.py && \
 pip freeze > requirements.txt
+
 ```
 
 - install protoc

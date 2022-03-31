@@ -30,7 +30,7 @@ platformdirs==2.5.1
 protobuf==3.19.4
 pycodestyle==2.8.0
 pydantic==1.9.0
-pylint==2.13.1
+pylint==2.13.2
 pylint-protobuf==0.20.2
 pyrsistent==0.18.1
 pysolace==0.9.11
