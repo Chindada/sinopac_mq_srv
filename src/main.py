@@ -816,8 +816,10 @@ def unsubscribe_stock_realtime_tick_by_stock_arr():
     body = request.get_json()
     stocks = body['stock_num_arr']
     for stock in stocks:
-        QUOTE_SUB_LIST.remove(stock)
-        del CURRENT_STOCK_COUNT[stock]
+        if stock in QUOTE_SUB_LIST:
+            QUOTE_SUB_LIST.remove(stock)
+        if stock in CURRENT_STOCK_COUNT:
+            del CURRENT_STOCK_COUNT[stock]
         logger.info('unsubscribe stock realtime tick %s', stock)
         token.quote.unsubscribe(
             token.Contracts.Stocks[stock],
@@ -936,7 +938,8 @@ def unsubscribe_stock_realtime_bidask_by_stock_arr():
     body = request.get_json()
     stocks = body['stock_num_arr']
     for stock in stocks:
-        BIDASK_SUB_LIST.remove(stock)
+        if stock in BIDASK_SUB_LIST:
+            BIDASK_SUB_LIST.remove(stock)
         logger.info('unsubscribe stock realtime bid-ask %s', stock)
         token.quote.unsubscribe(
             token.Contracts.Stocks[stock],

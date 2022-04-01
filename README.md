@@ -35,7 +35,6 @@ pip install -U \
     pylint pylint-protobuf simplejson paho-mqtt && \
 mypy --install-types --non-interactive ./src/main.py && \
 pip freeze > requirements.txt
-
 ```
 
 - install protoc
