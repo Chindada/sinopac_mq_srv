@@ -183,6 +183,69 @@ def get_all_snapshot():
     return jsonify({'result': 'fail'})
 
 
+@ api.route('/sinopac-mq-srv/real-time/snapshots', methods=['POST'])
+def get_snapshots():
+    '''Get latest snapshot by stock arr and send to 'internal/snapshots'
+    ---
+    tags:
+      - RealTime
+    parameters:
+      - in: body
+        name: stock arr
+        description: Stock Arr
+        required: true
+        schema:
+          $ref: '#/definitions/StockArr'
+    responses:
+      200:
+        description: Success Response
+        name: result
+        schema:
+          $ref: '#/definitions/Result'
+      500:
+        description: Server Not Ready
+    '''
+    body = request.get_json()
+    stocks = body['stock_num_arr']
+    contracts = []
+    for stock in stocks:
+        contracts.append(token.Contracts.Stocks[stock])
+    snapshots = token.snapshots(contracts)
+    response = trade_agent_pb2.SnapshotResponse()
+    for result in snapshots:
+        tmp = trade_agent_pb2.SnapshotMessage()
+        tmp.ts = result.ts
+        tmp.code = result.code
+        tmp.exchange = result.exchange
+        tmp.open = result.open
+        tmp.high = result.high
+        tmp.low = result.low
+        tmp.close = result.close
+        tmp.tick_type = result.tick_type
+        tmp.change_price = result.change_price
+        tmp.change_rate = result.change_rate
+        tmp.change_type = result.change_type
+        tmp.average_price = result.average_price
+        tmp.volume = result.volume
+        tmp.total_volume = result.total_volume
+        tmp.amount = result.amount
+        tmp.total_amount = result.total_amount
+        tmp.yesterday_volume = result.yesterday_volume
+        tmp.buy_price = result.buy_price
+        tmp.buy_volume = result.buy_volume
+        tmp.sell_price = result.sell_price
+        tmp.sell_volume = result.sell_volume
+        tmp.volume_ratio = result.volume_ratio
+        response.data.append(tmp)
+    if MQTT_CLIENT.is_connected() is False and MQTT_CONNECTING is False:
+        logger.warning(response)
+        return jsonify({'result': 'mq broker is disconnected'})
+    if response.ByteSize != 0:
+        MQTT_CLIENT.publish(topic=mq_topic.topic_snapshots, payload=response.SerializeToString(), qos=2, retain=False)
+        return jsonify({'result': 'success'})
+    return jsonify({'result': 'fail'})
+
+
 @ api.route('/sinopac-mq-srv/real-time/snapshot/tse', methods=['GET'])
 def get_tse_snapshot():
     '''Get TSE latest snapshot and send to 'internal/snapshot_tse'

@@ -2,6 +2,8 @@ topic_stock_detail = 'internal/stock_detail'
 
 topic_all_snapshot = 'internal/snapshot_all'
 
+topic_snapshots = 'internal/snapshots'
+
 topic_tse_snapshot = 'internal/snapshot_tse'
 
 topic_history_tick = 'internal/history_tick'

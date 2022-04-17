@@ -40,10 +40,11 @@ pip freeze > requirements.txt
 - install protoc
 
 ```sh
+version=3.20.0
 rm -rf /utils
 mkdir /utils
 cd /utils
-curl -fSL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.4/protoc-3.19.4-linux-x86_64.zip --output protobuf.zip
+curl -fSL https://github.com/protocolbuffers/protobuf/releases/download/v$version/protoc-$version-linux-x86_64.zip --output protobuf.zip
 unzip protobuf.zip -d protobuf
 cd /sinopac_mq_srv
 ```
