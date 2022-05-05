@@ -41,6 +41,7 @@ pip freeze > requirements.txt
 
 ```sh
 version=3.20.0
+version=3.20.1
 rm -rf /utils
 mkdir /utils
 cd /utils
