@@ -1,4 +1,4 @@
-FROM python:3.7.12-bullseye
+FROM python:3.7.13-bullseye
 USER root
 
 ENV TZ=Asia/Taipei
