@@ -1,88 +1,100 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 include:
-  - template: SAST.gitlab-ci.yml
-
+- template: SAST.gitlab-ci.yml
+- template: Security/Secret-Detection.gitlab-ci.yml
 variables:
   DOCKER_DRIVER: overlay2
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-
+  IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
 stages:
-  - test
-  - build
-  - deployment
-
+- test
+- build
+- deployment
 py-lint:
   image: python:3.7.13-bullseye
   only:
-    - main
+  - main
   stage: test
   before_script:
-    - pip install --no-warn-script-location --no-cache-dir -r requirements.txt
-    - mypy --install-types --non-interactive ./src/main.py ./src/mq_topic.py
+  - pip install --no-warn-script-location --no-cache-dir -r requirements.txt
+  - mypy --install-types --non-interactive ./src/main.py ./src/mq_topic.py
   script:
-    # - pylint ./src/main.py ./src/mq_topic.py
-    - mypy --config-file=./mypy.ini ./src/main.py ./src/mq_topic.py
-
+  - mypy --config-file=./mypy.ini ./src/main.py ./src/mq_topic.py
 docker_build:
   image: docker:latest
   only:
-    - main
+  - main
   stage: build
   before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
-    - docker rmi $IMAGE_TAG
-    - docker system prune --volumes -f
-
+  - docker build -t $IMAGE_TAG .
+  - docker push $IMAGE_TAG
+  - docker rmi $IMAGE_TAG
+  - docker system prune --volumes -f
 docker-deploy:
   image: alpine:latest
   only:
-    - main
+  - main
   stage: deployment
   script:
-    - chmod og= $ID_ED25519
-    - apk update && apk add openssh-client
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker pull $IMAGE_TAG"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker stop sinopac_mq_srv || true"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker system prune --volumes -f"
-    - |
-      ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run --name sinopac_mq_srv \
-      --network tocvlan \
-      --ip=172.20.10.223 \
-      --restart always \
-      -v /$SERVER_USER/sinopac_mq_srv_logs:/sinopac_mq_srv/logs \
-      -e PYPORT=$PYPORT \
-      -e TRADEID=$TRADEID \
-      -e TRADEPASS=$TRADEPASS \
-      -e CAPASS=$CAPASS \
-      -e TZ="Asia/Taipei" \
-      -dt $IMAGE_TAG"
+  - chmod og= $ID_ED25519
+  - apk update && apk add openssh-client
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    pull $IMAGE_TAG"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    stop sinopac_mq_srv || true"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    system prune --volumes -f"
+  - |
+    ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run --name sinopac_mq_srv \
+    --network tocvlan \
+    --ip=172.20.10.223 \
+    --restart always \
+    -v /$SERVER_USER/sinopac_mq_srv_logs:/sinopac_mq_srv/logs \
+    -e PYPORT=$PYPORT \
+    -e TRADEID=$TRADEID \
+    -e TRADEPASS=$TRADEPASS \
+    -e CAPASS=$CAPASS \
+    -e TZ="Asia/Taipei" \
+    -dt $IMAGE_TAG"
   environment:
     name: review/$CI_COMMIT_REF_NAME
     on_stop: stop_production
-
 stop_production:
   image: alpine:latest
   only:
-    - main
+  - main
   stage: deployment
   script:
-    - chmod og= $ID_ED25519
-    - apk update && apk add openssh-client
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /$SERVER_USER/sinopac_mq_srv_logs && tar -czvPf /sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz ./*.json"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "rm -rf /$SERVER_USER/sinopac_mq_srv_logs || true"
-    - scp -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP:/sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "rm -rf /sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz || true"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker stop sinopac_mq_srv"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker system prune --volumes -f"
-    - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker rmi $IMAGE_TAG"
+  - chmod og= $ID_ED25519
+  - apk update && apk add openssh-client
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd /$SERVER_USER/sinopac_mq_srv_logs
+    && tar -czvPf /sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz ./*.json"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "rm -rf
+    /$SERVER_USER/sinopac_mq_srv_logs || true"
+  - scp -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP:/sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz
+    sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "rm -rf
+    /sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz || true"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    stop sinopac_mq_srv"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    system prune --volumes -f"
+  - ssh -i $ID_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker
+    rmi $IMAGE_TAG"
   when: manual
   environment:
     name: review/$CI_COMMIT_REF_NAME
     action: stop
   artifacts:
     paths:
-      - sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz
+    - sinopac_mq_srv_logs_$CI_COMMIT_SHORT_SHA.tgz
     expire_in: 2 week
