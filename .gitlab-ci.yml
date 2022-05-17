@@ -6,8 +6,8 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 include:
-  - template: SAST.gitlab-ci.yml
-  - template: Secret-Detection.gitlab-ci.yml
+  - local: SAST.gitlab-ci.yml
+  - local: Secret-Detection.gitlab-ci.yml
 variables:
   DOCKER_DRIVER: overlay2
   IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
